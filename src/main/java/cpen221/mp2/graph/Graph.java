@@ -9,8 +9,180 @@ import java.util.*;
  */
 public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>, IGraph<V, E> {
 
-    // TODO: Implement this type
+    ArrayList<V> vertices = new ArrayList<>();
+    ArrayList<E> edges = new ArrayList<>();
+    public Graph(){
 
+
+    }
+
+    /**
+     * Add a vertex to the graph
+     *
+     * @param v vertex to add
+     * @return true if the vertex was added successfully and false otherwise
+     */
+    public boolean addVertex(V v){
+        if(this.vertices.contains(v)){
+            return false;
+        }
+        else{
+            this.vertices.add(v);
+        }
+        return true;
+    }
+
+    /**
+     * Check if a vertex is part of the graph
+     *
+     * @param v vertex to check in the graph
+     * @return true of v is part of the graph and false otherwise
+     */
+    public boolean vertex(V v){
+        return vertices.contains(v);
+    }
+
+    /**
+     * Add an edge of the graph
+     *
+     * @param e the edge to add to the graph
+     * @return true if the edge was successfully added and false otherwise
+     */
+    public boolean addEdge(E e){
+        if(edges.contains(e)){
+            return false;
+        }
+        else{
+            edges.add(e);
+            addVertex(e.v1());
+            addVertex(e.v2());
+        }
+        return true;
+    }
+
+    /**
+     * Check if an edge is part of the graph
+     *
+     * @param e the edge to check in the graph
+     * @return true if e is an edge in the graph and false otherwise
+     */
+    public boolean edge(E e){
+        return edges.contains(e);
+    }
+
+    /**
+     * Check if v1-v2 is an edge in the graph
+     *
+     * @param v1 the first vertex of the edge
+     * @param v2 the second vertex of the edge
+     * @return true of the v1-v2 edge is part of the graph and false otherwise
+     */
+
+    public boolean edge(V v1, V v2){
+        for(E e: edges){
+            if(e.incident(v1) && e.incident(v2)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Determine the length on an edge in the graph
+     *
+     * @param v1 the first vertex of the edge
+     * @param v2 the second vertex of the edge
+     * @return the length of the v1-v2 edge if this edge is part of the graph
+     */
+    public int edgeLength(V v1, V v2){
+
+    }
+
+    /**
+     * Obtain the sum of the lengths of all edges in the graph
+     *
+     * @return the sum of the lengths of all edges in the graph
+     */
+    public int edgeLengthSum(){
+
+    }
+
+    /**
+     * Remove an edge from the graph
+     *
+     * @param e the edge to remove
+     * @return true if e was successfully removed and false otherwise
+     */
+    public boolean remove(E e){
+
+    }
+
+    /**
+     * Remove a vertex from the graph
+     *
+     * @param v the vertex to remove
+     * @return true if v was successfully removed and false otherwise
+     */
+    public boolean remove(V v){
+
+    }
+
+
+    /**
+     * Obtain a set of all vertices in the graph.
+     * Access to this set **should not** permit graph mutations.
+     *
+     * @return a set of all vertices in the graph
+     */
+    public Set<V> allVertices(){
+        Set<V> vertexes = new HashSet<>();
+        for(V v: this.vertices){
+            vertexes.add((V) v.copyVertex());
+        }
+        return vertexes;
+    }
+
+    /**
+     * Obtain a set of all vertices incident on v.
+     * Access to this set **should not** permit graph mutations.
+     *
+     * @param v the vertex of interest
+     * @return all edges incident on v
+     */
+    public Set<E> allEdges(V v){
+        Set<E> newEdges = new HashSet<>();
+        for(E e: this.edges){
+            if(e.incident(v)){
+                newEdges.add( (E) new Edge(e.v1(),e.v2(),e.length()));
+            }
+        }
+        return newEdges;
+    }
+
+    /**
+     * Obtain a set of all edges in the graph.
+     * Access to this set **should not** permit graph mutations.
+     *
+     * @return all edges in the graph
+     */
+    public Set<E> allEdges(){
+        Set<E> newEdges = new HashSet<>();
+        for(E e: this.edges){
+            newEdges.add( (E) new Edge(e.v1(),e.v2(),e.length()));
+        }
+        return newEdges;
+    }
+
+    /**
+     * Obtain all the neighbours of vertex v.
+     * Access to this map **should not** permit graph mutations.
+     *
+     * @param v is the vertex whose neighbourhood we want.
+     * @return a map containing each vertex w that neighbors v and the edge between v and w.
+     */
+    Map<V, E> getNeighbours(V v){
+
+    }
     //// add all new code above this line ////
 
     /**
