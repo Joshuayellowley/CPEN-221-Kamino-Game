@@ -81,8 +81,8 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
      */
 
     public boolean edge(V v1, V v2){
-        for (E edge : edges) {
-            if (edge.v1() == v1 && edge.v2() == v2 || edge.v2() == v1 && edge.v1() == v2) {
+        for(E e: edges){
+            if(e.incident(v1) && e.incident(v2)){
                 return true;
             }
         }
@@ -159,7 +159,13 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
      *
      * @return a set of all vertices in the graph
      */
-    public Set<V> allVertices();
+    public Set<V> allVertices(){
+        Set<V> vertexes = new HashSet<>();
+        for(V v: this.vertices){
+            vertexes.add((V) v.copyVertex());
+        }
+        return vertexes;
+    }
 
     /**
      * Obtain a set of all vertices incident on v.
@@ -168,7 +174,15 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
      * @param v the vertex of interest
      * @return all edges incident on v
      */
-    public Set<E> allEdges(V v);
+    public Set<E> allEdges(V v){
+        Set<E> newEdges = new HashSet<>();
+        for(E e: this.edges){
+            if(e.incident(v)){
+                newEdges.add( (E) new Edge(e.v1(),e.v2(),e.length()));
+            }
+        }
+        return newEdges;
+    }
 
     /**
      * Obtain a set of all edges in the graph.
@@ -176,7 +190,13 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
      *
      * @return all edges in the graph
      */
-    public Set<E> allEdges();
+    public Set<E> allEdges(){
+        Set<E> newEdges = new HashSet<>();
+        for(E e: this.edges){
+            newEdges.add( (E) new Edge(e.v1(),e.v2(),e.length()));
+        }
+        return newEdges;
+    }
 
     /**
      * Obtain all the neighbours of vertex v.
@@ -185,10 +205,9 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
      * @param v is the vertex whose neighbourhood we want.
      * @return a map containing each vertex w that neighbors v and the edge between v and w.
      */
-    Map<V, E> getNeighbours(V v);
+    Map<V, E> getNeighbours(V v){
 
-
-
+    }
     //// add all new code above this line ////
 
     /**
