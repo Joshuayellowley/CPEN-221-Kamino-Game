@@ -9,22 +9,21 @@ import java.util.*;
  */
 public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>, IGraph<V, E> {
 
-    // TODO: Implement this type
+    private ArrayList<V> vertices = new ArrayList<>();
+    private ArrayList<E> edges = new ArrayList<>();
 
-    ArrayList<V> vertices = new ArrayList<>();
-    ArrayList<E> edges = new ArrayList<>();
+    public Graph(){}
 
-    public Graph(){
-
-    }
-
-    /*
+    /**
      * Add a vertex to the graph
      *
      * @param v vertex to add
-     * @return true if the vertex was added successfully and false otherwise
+     * @return true iff v is a vertex and is not already in the graph, false otherwise
      */
     public boolean addVertex(V v){
+        if(v == null){
+            return false;
+        }
         if(!vertices.contains(v)){
             vertices.add(v);
             return true;
@@ -38,7 +37,7 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
      * Check if a vertex is part of the graph
      *
      * @param v vertex to check in the graph
-     * @return true of v is part of the graph and false otherwise
+     * @return true if v is a vertex and is part of the graph and false otherwise
      */
     public boolean vertex(V v){
         return vertices.contains(v);
@@ -48,9 +47,12 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
      * Add an edge of the graph
      *
      * @param e the edge to add to the graph
-     * @return true if the edge was successfully added and false otherwise
+     * @return true iff e is an edge and is not already in the graph, false otherwise
      */
     public boolean addEdge(E e){
+        if(e == null){
+            return false;
+        }
         if(!edges.contains(e)){
             addVertex(e.v1());
             addVertex(e.v2());
@@ -98,8 +100,8 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
      */
     public int edgeLength(V v1, V v2){
         for (E edge : edges) {
-            if (edge.v1() == v1 && edge.v2() == v2) {
-                return (edge.v1().id() - edge.v2().id());
+            if (edge.incident(v1) && edge.incident(v2)) {
+                return edge.length();
             }
         }
         return 0;
@@ -113,8 +115,8 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
      */
     public int edgeLengthSum(){
         int sum = 0;
-        for(int i = 0; i < edges.size(); i++){
-            sum += edges.get(i).length();
+        for(E e: this.edges){
+            sum += e.length();
         }
         return sum;
     }
@@ -126,11 +128,9 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
      * @return true if e was successfully removed and false otherwise
      */
     public boolean remove(E e){
-        for(int i = 0; i < edges.size(); i++){
-            if(e == edges.get(i)){
-                edges.remove(i);
-                return true;
-            }
+        if(this.edges.contains(e)){
+            this.edges.remove(e);
+            return true;
         }
         System.out.println("The edge is not contained in this graph");
         return false;
@@ -161,8 +161,8 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
      */
     public Set<V> allVertices(){
         Set<V> vertexes = new HashSet<>();
-        for(V v: this.vertices){
-            vertexes.add((V) v.copyVertex());
+        for(Vertex v: this.vertices){
+            vertexes.add((V)v.copyVertex());
         }
         return vertexes;
     }
@@ -206,8 +206,12 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
      * @return a map containing each vertex w that neighbors v and the edge between v and w.
      */
     public Map<V, E> getNeighbours(V v){
-
-        return null;
+        Set<E> edgeSet = this.allEdges(v);
+        Map<V, E> newMap = new HashMap<>();
+        for(E e: edgeSet){
+            newMap.put(e.distinctVertex(v),e);
+        }
+        return newMap;
     }
 
     /**
@@ -226,85 +230,42 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
      * Compute the minimum spanning tree of the graph.
      * See https://en.wikipedia.org/wiki/Minimum_spanning_tree
      *
+     *
      * @return a list of edges that forms a minimum spanning tree of the graph
      */
-    public List<E> minimumSpanningTree(){
+    @Override
+    public List<E> minimumSpanningTree() {
 
-        ArrayList<E> startList = edges;
-        ArrayList<E> sortList = new ArrayList<E>();
-        List<E> minTree = new ArrayList<E>();
+        ArrayList<V> allVertices = new ArrayList<>(this.vertices);
+        ArrayList<V> visited = new ArrayList<>();
+        ArrayList<E> path = new ArrayList<>();
 
-        int index;
-        int min;
-
-        for(int x = 0; x < startList.size(); x++) {
-            index = x;
-            min = 1000000000;
-            for (int i = 0; i < startList.size(); i++) {
-                if (!(sortList.contains(startList.get(i)))) {
-                    if (startList.get(i).length() < min) {
-                        min = startList.get(i).length();
-                        index = i;
+        visited.add(allVertices.get(0));
+        while(!visited.containsAll(allVertices)) {
+            int minLen = Integer.MAX_VALUE;
+                E chosenEdge = this.edges.get(0);
+                V chosenVert = visited.get(0);
+                for(V v: visited) {
+                    for (Map.Entry<V, E> entry : this.getNeighbours(v).entrySet()) {
+                        if (entry.getValue().length() < minLen
+                                && !path.contains(entry.getValue())
+                                && !visited.contains(entry.getKey())) {
+                            minLen = entry.getValue().length();
+                            chosenEdge = entry.getValue();
+                            chosenVert = entry.getKey();
+                        }
                     }
                 }
-            }
-            sortList.add(startList.get(index));
+
+                path.add(chosenEdge);
+                visited.add(chosenVert);
         }
-
-
-        for(E poop : sortList) {
-            System.out.println(poop.length());
-        }
-
-        minTree.add(sortList.get(0));
-        minTree.add(sortList.get(1));
-
-        for(int i = 2; i < sortList.size(); i++){
-            int count1 = 0;
-            int count2 = 0;
-            for(int x = 0; x < minTree.size(); x++){
-
-                    if (minTree.get(x).incident(sortList.get(i).v1())) {
-                        count1++;
-                    }
-                    if (minTree.get(x).incident(sortList.get(i).v2())) {
-                        count2++;
-                    }
-
-            }
-//            if(minTree.size() == this.vertices.size()-2){
-//                if (count1 > 0 && count2 > 0) {
-//                    minTree.add(sortList.get(i));
-//                }
-//            }else {
-                if (count1 == 0 || count2 == 0) {
-                    minTree.add(sortList.get(i));
-                }
-            }
-
-        for(E e : minTree){
-            if(sortList.contains(e)){
-                sortList.remove(e);
-            }
-        }
-
-
-        for(E poop : minTree) {
+        for(E poop : path) {
             System.out.println("------");
             System.out.println(poop.v1().id());
             System.out.println(poop.v2().id());
         }
-
-        return minTree;
-    }
-
-    public boolean isCycle(ArrayList<E> curEdges){
-
-        for(E poo : curEdges){
-
-        }
-
-        return true;
+        return path;
     }
 
 

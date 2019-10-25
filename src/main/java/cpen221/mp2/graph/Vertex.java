@@ -23,9 +23,7 @@ public class Vertex {
     public boolean equals(Object o) {
         if (o instanceof Vertex) {
             Vertex other = (Vertex) o;
-            if (other.id == this.id && other.name.equals(this.name)) {
-                return true;
-            }
+            return other.id == this.id && other.name.equals(this.name);
         }
         return false;
     }
@@ -59,7 +57,7 @@ public class Vertex {
 
     //// --- any new methods, if necessary, go below this link --- ////
 
-    public Vertex copyVertex(){
+    Vertex copyVertex(){
         return new Vertex(this.id(), this.name());
     }
 
