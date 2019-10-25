@@ -205,9 +205,161 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
      * @param v is the vertex whose neighbourhood we want.
      * @return a map containing each vertex w that neighbors v and the edge between v and w.
      */
-    Map<V, E> getNeighbours(V v){
+    public Map<V, E> getNeighbours(V v){
 
+        return null;
     }
+
+    /**
+     * Compute the shortest path from source to sink
+     *
+     * @param source the start vertex
+     * @param sink   the end vertex
+     * @return the vertices, in order, on the shortest path from source to sink (both end points are part of the list)
+     */
+    @Override
+    public List<V> shortestPath(V source, V sink) {
+        return null;
+    }
+
+    /**
+     * Compute the minimum spanning tree of the graph.
+     * See https://en.wikipedia.org/wiki/Minimum_spanning_tree
+     *
+     * @return a list of edges that forms a minimum spanning tree of the graph
+     */
+    public List<E> minimumSpanningTree(){
+
+        ArrayList<E> startList = edges;
+        ArrayList<E> sortList = new ArrayList<E>();
+        List<E> minTree = new ArrayList<E>();
+
+        int index;
+        int min;
+
+        for(int x = 0; x < startList.size(); x++) {
+            index = x;
+            min = 1000000000;
+            for (int i = 0; i < startList.size(); i++) {
+                if (!(sortList.contains(startList.get(i)))) {
+                    if (startList.get(i).length() < min) {
+                        min = startList.get(i).length();
+                        index = i;
+                    }
+                }
+            }
+            sortList.add(startList.get(index));
+        }
+
+
+        for(E poop : sortList) {
+            System.out.println(poop.length());
+        }
+
+        minTree.add(sortList.get(0));
+        minTree.add(sortList.get(1));
+
+        for(int i = 2; i < sortList.size(); i++){
+            int count1 = 0;
+            int count2 = 0;
+            for(int x = 0; x < minTree.size(); x++){
+
+                    if (minTree.get(x).incident(sortList.get(i).v1())) {
+                        count1++;
+                    }
+                    if (minTree.get(x).incident(sortList.get(i).v2())) {
+                        count2++;
+                    }
+
+            }
+//            if(minTree.size() == this.vertices.size()-2){
+//                if (count1 > 0 && count2 > 0) {
+//                    minTree.add(sortList.get(i));
+//                }
+//            }else {
+                if (count1 == 0 || count2 == 0) {
+                    minTree.add(sortList.get(i));
+                }
+            }
+
+        for(E e : minTree){
+            if(sortList.contains(e)){
+                sortList.remove(e);
+            }
+        }
+
+
+        for(E poop : minTree) {
+            System.out.println("------");
+            System.out.println(poop.v1().id());
+            System.out.println(poop.v2().id());
+        }
+
+        return minTree;
+    }
+
+    public boolean isCycle(ArrayList<E> curEdges){
+
+        for(E poo : curEdges){
+
+        }
+
+        return true;
+    }
+
+
+    /**
+     * Compute the length of a given path
+     *
+     * @param path indicates the vertices on the given path
+     * @return the length of path
+     */
+    @Override
+    public int pathLength(List<V> path) {
+        return 0;
+    }
+
+    /**
+     * Obtain all vertices w that are no more than a <em>path distance</em> of range from v.
+     *
+     * @param v     the vertex to start the search from.
+     * @param range the radius of the search.
+     * @return a set of vertices that are within range of v (this set does not contain v).
+     */
+    @Override
+    public Set<V> search(V v, int range) {
+        return null;
+    }
+
+    /**
+     * Compute the diameter of the graph.
+     * <ul>
+     * <li>The diameter of a graph is the length of the longest shortest path in the graph.</li>
+     * <li>If a graph has multiple components then we will define the diameter
+     * as the diameter of the largest component.</li>
+     * </ul>
+     *
+     * @return the diameter of the graph.
+     */
+    @Override
+    public int diameter() {
+        return 0;
+    }
+
+    /**
+     * Find the edge that connects two vertices if such an edge exists.
+     * This method should not permit graph mutations.
+     *
+     * @param v1 one end of the edge
+     * @param v2 the other end of the edge
+     * @return the edge connecting v1 and v2
+     */
+    @Override
+    public E getEdge(V v1, V v2) {
+        return null;
+    }
+
+
     //// add all new code above this line ////
 
     /**
