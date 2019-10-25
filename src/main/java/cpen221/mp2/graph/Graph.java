@@ -229,12 +229,44 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
      * Compute the minimum spanning tree of the graph.
      * See https://en.wikipedia.org/wiki/Minimum_spanning_tree
      *
+     *
      * @return a list of edges that forms a minimum spanning tree of the graph
      */
     @Override
     public List<E> minimumSpanningTree() {
-        return null;
+
+        ArrayList<V> allVertices = new ArrayList<>(this.vertices);
+        ArrayList<V> visited = new ArrayList<>();
+        ArrayList<E> path = new ArrayList<>();
+
+        visited.add(allVertices.get(0));
+        while(!visited.containsAll(allVertices)) {
+            int minLen = Integer.MAX_VALUE;
+                E chosenEdge = this.edges.get(0);
+                V chosenVert = visited.get(0);
+                for(V v: visited) {
+                    for (Map.Entry<V, E> entry : this.getNeighbours(v).entrySet()) {
+                        if (entry.getValue().length() < minLen
+                                && !path.contains(entry.getValue())
+                                && !visited.contains(entry.getKey())) {
+                            minLen = entry.getValue().length();
+                            chosenEdge = entry.getValue();
+                            chosenVert = entry.getKey();
+                        }
+                    }
+                }
+
+                path.add(chosenEdge);
+                visited.add(chosenVert);
+        }
+        for(E poop : path) {
+            System.out.println("------");
+            System.out.println(poop.v1().id());
+            System.out.println(poop.v2().id());
+        }
+        return path;
     }
+
 
     /**
      * Compute the length of a given path
@@ -287,7 +319,7 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
         return null;
     }
 
-    
+
     //// add all new code above this line ////
 
     /**
