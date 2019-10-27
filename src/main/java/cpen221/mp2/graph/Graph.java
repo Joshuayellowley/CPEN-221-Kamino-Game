@@ -105,7 +105,6 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
             }
         }
         return 0;
-
     }
 
     /**
@@ -223,7 +222,92 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
      */
     @Override
     public List<V> shortestPath(V source, V sink) {
-        return null;
+
+        Map<List<V>,Integer> allPathMap = new HashMap<>();
+        Map<V,E> sourceList = getNeighbours(source);
+        List<V> shortest = new ArrayList<>();
+        shortest.add(sink);
+
+        Set<V> visited = new HashSet<V>();
+        visited.add(source);
+        V curV = source;
+        int minLen = Integer.MAX_VALUE;
+
+        while(!visited.contains(sink)){
+
+            sourceList = getNeighbours(curV);
+
+
+
+
+            visited.add(curV);
+        }
+
+
+        return shortest;
+    }
+
+    /**
+     * Compute the shortest path lengths from source to all other vertices
+     *
+     * @param source the start vertex
+     * @return a map of all the vertices in the graph, mapped with the shortest distance from the source.
+     */
+    private Map<V,Integer> getAllShortestPaths(V source){
+        Set<V> visited = new HashSet<>();
+        Map<V,Integer> distance = new HashMap<>();
+
+        for(int i = 0; i < vertices.size(); i++){
+            if(vertices.get(i) == source){
+                distance.put(vertices.get(i),0);
+            }else{
+                distance.put(vertices.get(i),Integer.MAX_VALUE);
+            }
+        }
+
+        visited.add(source);
+        int currentDistance = 0;
+        V curV = source;
+
+        Map<V,E> sourceList = getNeighbours(source);
+
+        for(V v : vertices){
+            if(!(sourceList.get(v) == null)){
+                distance.put(v,sourceList.get(v).length());
+            }
+        }
+
+        int minLen = Integer.MAX_VALUE;
+
+        while(visited.size() != vertices.size()){
+
+            for(V v : vertices){
+                if(!visited.contains(v)){
+                    if(distance.get(v) < minLen){
+                        curV = v;
+                    }
+                }
+            }
+
+            sourceList = getNeighbours(curV);
+            currentDistance = distance.get(curV);
+
+            for(V v : vertices){
+                if(sourceList.get(v) != null) {
+                    if (currentDistance + sourceList.get(v).length() < distance.get(v)) {
+                        distance.put(v, currentDistance + sourceList.get(v).length());
+                    }
+                }
+            }
+
+            visited.add(curV);
+        }
+
+        for(V v: vertices){
+            System.out.println(distance.get(v));
+        }
+
+        return distance;
     }
 
     /**
@@ -277,7 +361,21 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
      */
     @Override
     public int pathLength(List<V> path) {
-        return 0;
+        int totalLength = 0;
+        for(int i = 0; i < path.size() - 1; i++){
+
+            E temp = getEdge(path.get(i),path.get(i+1));
+
+            if(temp == null){
+                System.out.println("This is an invalid path");
+                return 0;
+            }else{
+                totalLength += temp.length();
+            }
+
+        }
+
+        return totalLength;
     }
 
     /**
@@ -289,7 +387,17 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
      */
     @Override
     public Set<V> search(V v, int range) {
-        return null;
+
+        Map<V,Integer> vertexDistance = this.getAllShortestPaths(v);
+        Set<V> inRange = new HashSet<V>();
+
+        for(V vertex : vertices){
+            if(vertexDistance.get(vertex) <= range && !v.equals(vertex)){
+                inRange.add(vertex);
+            }
+        }
+
+        return inRange;
     }
 
     /**
@@ -304,7 +412,19 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
      */
     @Override
     public int diameter() {
-        return 0;
+
+        int max = 0;
+
+        for(V v: vertices){
+            for(V v1: vertices){
+                if(this.getAllShortestPaths(v).get(v1) > max){
+                    max = this.getAllShortestPaths(v).get(v1);
+                }
+            }
+        }
+
+
+        return max;
     }
 
     /**
@@ -317,9 +437,30 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
      */
     @Override
     public E getEdge(V v1, V v2) {
+
+        for(E edge : edges){
+            if(edge.incident(v1) && edge.incident(v2)){
+                return edge;
+            }
+        }
+
         return null;
     }
 
+    private class ParentList {
+
+        ArrayList<V> parents = new ArrayList<>();
+        Vertex v = new Vertex(1, "Parent");
+
+        public ParentList(V v){
+            this.v = v;
+        }
+
+        private void add(V v){
+            this.parents.add(v);
+        }
+
+    }
 
     //// add all new code above this line ////
 
