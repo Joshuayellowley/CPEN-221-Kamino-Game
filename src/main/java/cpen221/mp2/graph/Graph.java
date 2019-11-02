@@ -223,28 +223,7 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
     @Override
     public List<V> shortestPath(V source, V sink) {
 
-        Map<List<V>,Integer> allPathMap = new HashMap<>();
-        Map<V,E> sourceList = getNeighbours(source);
-        List<V> shortest = new ArrayList<>();
-        shortest.add(sink);
 
-        Set<V> visited = new HashSet<V>();
-        visited.add(source);
-        V curV = source;
-        int minLen = Integer.MAX_VALUE;
-
-        while(!visited.contains(sink)){
-
-            sourceList = getNeighbours(curV);
-
-
-
-
-            visited.add(curV);
-        }
-
-
-        return shortest;
     }
 
     /**
