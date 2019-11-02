@@ -225,7 +225,7 @@ public class GraphTest {
 
 
     @Test
-    public void path() {
+    public void testShortestPath() {
         Vertex v1 = new Vertex(1, "A");
         Vertex v2 = new Vertex(2, "B");
         Vertex v3 = new Vertex(3, "C");
@@ -262,6 +262,12 @@ public class GraphTest {
 
         List<Vertex> path1 = new ArrayList<>();
         List<Vertex> path2 = new ArrayList<>();
+        List<Vertex> shortestPath = new ArrayList<>();
+
+        shortestPath.add(v1);
+        //shortestPath.add(v6);
+        shortestPath.add(v2);
+        shortestPath.add(v4);
 
         path1.add(v3);
         path1.add(v1);
@@ -273,9 +279,74 @@ public class GraphTest {
         path2.add(v1);
 
 
+
         assertEquals(16,g.diameter(),0.0001);
         assertEquals(12, g.pathLength(path1), 0.00001);
         assertEquals(23, g.pathLength(path2), 0.00001);
+        assertEquals(shortestPath, g.shortestPath(v1, v4));
+
+    }
+
+    @Test
+    public void testShortestPath2() {
+        Vertex v1 = new Vertex(1, "A");
+        Vertex v2 = new Vertex(2, "B");
+        Vertex v3 = new Vertex(3, "C");
+        Vertex v4 = new Vertex(4, "D");
+        Vertex v5 = new Vertex(5, "E");
+        Vertex v6 = new Vertex(6, "F");
+
+
+        Edge<Vertex> e1 = new Edge<>(v1, v5, 2);
+        Edge<Vertex> e2 = new Edge<>(v3, v2, 3);
+        Edge<Vertex> e3 = new Edge<>(v2, v5, 1);
+        Edge<Vertex> e4 = new Edge<>(v5, v4, 7);
+        Edge<Vertex> e5 = new Edge<>(v2, v1, 9);
+        Edge<Vertex> e6 = new Edge<>(v3, v5, 4);
+        Edge<Vertex> e7 = new Edge<>(v6, v1, 10);
+        Edge<Vertex> e8 = new Edge<>(v3, v6, 11);
+
+        Graph<Vertex, Edge<Vertex>> g = new Graph<>();
+        g.addVertex(v1);
+        g.addVertex(v2);
+        g.addVertex(v3);
+        g.addVertex(v4);
+        g.addVertex(v5);
+        g.addVertex(v6);
+
+        g.addEdge(e1);
+        g.addEdge(e2);
+        g.addEdge(e3);
+        g.addEdge(e4);
+        g.addEdge(e5);
+        g.addEdge(e6);
+        g.addEdge(e7);
+        g.addEdge(e8);
+
+        List<Vertex> path1 = new ArrayList<>();
+        List<Vertex> path2 = new ArrayList<>();
+        List<Vertex> shortestPath = new ArrayList<>();
+
+        shortestPath.add(v6);
+        //shortestPath.add(v6);
+        shortestPath.add(v1);
+        shortestPath.add(v5);
+
+        path1.add(v3);
+        path1.add(v1);
+        path1.add(v5);
+
+        path2.add(v4);
+        path2.add(v3);
+        path2.add(v2);
+        path2.add(v1);
+
+
+
+        assertEquals(19,g.diameter(),0.0001);
+//        assertEquals(12, g.pathLength(path1), 0.00001);
+//        assertEquals(23, g.pathLength(path2), 0.00001);
+        assertEquals(shortestPath, g.shortestPath(v6, v5));
 
     }
 }

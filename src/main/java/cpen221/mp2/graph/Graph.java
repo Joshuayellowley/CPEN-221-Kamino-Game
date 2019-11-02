@@ -12,7 +12,8 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
     private ArrayList<V> vertices = new ArrayList<>();
     private ArrayList<E> edges = new ArrayList<>();
 
-    public Graph(){}
+    public Graph() {
+    }
 
     /**
      * Add a vertex to the graph
@@ -20,11 +21,11 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
      * @param v vertex to add
      * @return true iff v is a vertex and is not already in the graph, false otherwise
      */
-    public boolean addVertex(V v){
-        if(v == null){
+    public boolean addVertex(V v) {
+        if (v == null) {
             return false;
         }
-        if(!vertices.contains(v)){
+        if (!vertices.contains(v)) {
             vertices.add(v);
             return true;
         } else {
@@ -39,7 +40,7 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
      * @param v vertex to check in the graph
      * @return true if v is a vertex and is part of the graph and false otherwise
      */
-    public boolean vertex(V v){
+    public boolean vertex(V v) {
         return vertices.contains(v);
     }
 
@@ -49,11 +50,11 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
      * @param e the edge to add to the graph
      * @return true iff e is an edge and is not already in the graph, false otherwise
      */
-    public boolean addEdge(E e){
-        if(e == null){
+    public boolean addEdge(E e) {
+        if (e == null) {
             return false;
         }
-        if(!edges.contains(e)){
+        if (!edges.contains(e)) {
             addVertex(e.v1());
             addVertex(e.v2());
             edges.add(e);
@@ -82,9 +83,9 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
      * @return true of the v1-v2 edge is part of the graph and false otherwise
      */
 
-    public boolean edge(V v1, V v2){
-        for(E e: edges){
-            if(e.incident(v1) && e.incident(v2)){
+    public boolean edge(V v1, V v2) {
+        for (E e : edges) {
+            if (e.incident(v1) && e.incident(v2)) {
                 return true;
             }
         }
@@ -98,7 +99,7 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
      * @param v2 the second vertex of the edge
      * @return the length of the v1-v2 edge if this edge is part of the graph
      */
-    public int edgeLength(V v1, V v2){
+    public int edgeLength(V v1, V v2) {
         for (E edge : edges) {
             if (edge.incident(v1) && edge.incident(v2)) {
                 return edge.length();
@@ -112,9 +113,9 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
      *
      * @return the sum of the lengths of all edges in the graph
      */
-    public int edgeLengthSum(){
+    public int edgeLengthSum() {
         int sum = 0;
-        for(E e: this.edges){
+        for (E e : this.edges) {
             sum += e.length();
         }
         return sum;
@@ -126,8 +127,8 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
      * @param e the edge to remove
      * @return true if e was successfully removed and false otherwise
      */
-    public boolean remove(E e){
-        if(this.edges.contains(e)){
+    public boolean remove(E e) {
+        if (this.edges.contains(e)) {
             this.edges.remove(e);
             return true;
         }
@@ -141,8 +142,8 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
      * @param v the vertex to remove
      * @return true if v was successfully removed and false otherwise
      */
-    public boolean remove(V v){
-        if(vertices.contains(v)){
+    public boolean remove(V v) {
+        if (vertices.contains(v)) {
             vertices.remove(v);
             return true;
         } else {
@@ -158,10 +159,10 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
      *
      * @return a set of all vertices in the graph
      */
-    public Set<V> allVertices(){
+    public Set<V> allVertices() {
         Set<V> vertexes = new HashSet<>();
-        for(Vertex v: this.vertices){
-            vertexes.add((V)v.copyVertex());
+        for (Vertex v : this.vertices) {
+            vertexes.add((V) v.copyVertex());
         }
         return vertexes;
     }
@@ -173,11 +174,11 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
      * @param v the vertex of interest
      * @return all edges incident on v
      */
-    public Set<E> allEdges(V v){
+    public Set<E> allEdges(V v) {
         Set<E> newEdges = new HashSet<>();
-        for(E e: this.edges){
-            if(e.incident(v)){
-                newEdges.add( (E) new Edge(e.v1(),e.v2(),e.length()));
+        for (E e : this.edges) {
+            if (e.incident(v)) {
+                newEdges.add((E) new Edge(e.v1(), e.v2(), e.length()));
             }
         }
         return newEdges;
@@ -189,10 +190,10 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
      *
      * @return all edges in the graph
      */
-    public Set<E> allEdges(){
+    public Set<E> allEdges() {
         Set<E> newEdges = new HashSet<>();
-        for(E e: this.edges){
-            newEdges.add( (E) new Edge(e.v1(),e.v2(),e.length()));
+        for (E e : this.edges) {
+            newEdges.add((E) new Edge(e.v1(), e.v2(), e.length()));
         }
         return newEdges;
     }
@@ -204,11 +205,11 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
      * @param v is the vertex whose neighbourhood we want.
      * @return a map containing each vertex w that neighbors v and the edge between v and w.
      */
-    public Map<V, E> getNeighbours(V v){
+    public Map<V, E> getNeighbours(V v) {
         Set<E> edgeSet = this.allEdges(v);
         Map<V, E> newMap = new HashMap<>();
-        for(E e: edgeSet){
-            newMap.put(e.distinctVertex(v),e);
+        for (E e : edgeSet) {
+            newMap.put(e.distinctVertex(v), e);
         }
         return newMap;
     }
@@ -222,8 +223,86 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
      */
     @Override
     public List<V> shortestPath(V source, V sink) {
+            Map<V,V> sourcePaths = doDijkstra(source);
+            List<V> reversePath = new ArrayList<>();
+            List<V> path = new ArrayList<>();
+            reversePath.add(sink);
+            V curV = sink;
+            while(curV != source){
+              reversePath.add(sourcePaths.get(curV));
+              curV = sourcePaths.get(curV);
+            }
+            for(int i = reversePath.size()-1; i >= 0; i--){
+                path.add(reversePath.get(i));
+            }
+        return path;
+    }
+
+    private Map<V, V> doDijkstra(V source){
+
+        Map<V,Integer> dist = new HashMap<V,Integer>();
+        Map<V,V> prev = new HashMap<V,V>();
+        Set<V> allVs = new HashSet<V>();
+        boolean flag = false;
+
+        for(V v : vertices){
+
+            dist.put(v, Integer.MAX_VALUE);
+            allVs.add(v);
+
+        }
+
+        dist.put(source, 0);
 
 
+        while(!allVs.isEmpty()){
+            V curV = source;
+
+            if(flag){
+                int min = Integer.MAX_VALUE;
+                for(Map.Entry<V,Integer> entry : dist.entrySet()){
+                    if(entry.getValue() < min && allVs.contains(entry.getKey())) {
+                        curV = entry.getKey();
+                        min = entry.getValue();
+                    }
+                }
+            }
+
+            flag = true;
+
+            allVs.remove(curV);
+            int alt;
+            for(Map.Entry<V,E> entry : getNeighbours(curV).entrySet()){
+                if(allVs.contains(entry.getKey())){
+                    alt = dist.get(curV) + getEdge(entry.getKey(),curV).length();
+                    if(alt < dist.get(entry.getKey())){
+                        dist.put(entry.getKey(), alt);
+                        prev.put(entry.getKey(), curV);
+                    }
+                }
+            }
+
+
+        }
+
+
+        return prev;
+    }
+
+
+
+    private V getNearestVertex(V source){
+        List<V> vertexes = new ArrayList<>(vertices);
+        int minDist = Integer.MAX_VALUE;
+        V bestV = source;
+        for(V v: vertexes){
+            if(edgeLength(v, source) < minDist && edgeLength(v, source) != 0) {
+                minDist = edgeLength(v, source);
+                bestV = v;
+            }
+        }
+
+        return bestV;
     }
 
     /**
@@ -233,60 +312,106 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
      * @return a map of all the vertices in the graph, mapped with the shortest distance from the source.
      */
     private Map<V,Integer> getAllShortestPaths(V source){
-        Set<V> visited = new HashSet<>();
-        Map<V,Integer> distance = new HashMap<>();
+//        Set<V> visited = new HashSet<>();
+//        Map<V,Integer> distance = new HashMap<>();
+//
+//        for(int i = 0; i < vertices.size(); i++){
+//            if(vertices.get(i) == source){
+//                distance.put(vertices.get(i),0);
+//            }else{
+//                distance.put(vertices.get(i),Integer.MAX_VALUE);
+//            }
+//        }
+//
+//        visited.add(source);
+//        int currentDistance = 0;
+//        V curV = source;
+//
+//        Map<V,E> sourceList = getNeighbours(source);
+//
+//        for(V v : vertices){
+//            if(!(sourceList.get(v) == null)){
+//                distance.put(v,sourceList.get(v).length());
+//            }
+//        }
+//
+//        int minLen = Integer.MAX_VALUE;
+//
+//        while(visited.size() != vertices.size()){
+//
+//            for(V v : vertices){
+//                if(!visited.contains(v)){
+//                    if(distance.get(v) < minLen){
+//                        curV = v;
+//                    }
+//                }
+//            }
+//
+//            sourceList = getNeighbours(curV);
+//            currentDistance = distance.get(curV);
+//
+//            for(V v : vertices){
+//                if(sourceList.get(v) != null) {
+//                    if (currentDistance + sourceList.get(v).length() < distance.get(v)) {
+//                        distance.put(v, currentDistance + sourceList.get(v).length());
+//                    }
+//                }
+//            }
+//
+//            visited.add(curV);
+//        }
+//
+//        for(V v: vertices){
+//            System.out.println(distance.get(v));
+//        }
 
-        for(int i = 0; i < vertices.size(); i++){
-            if(vertices.get(i) == source){
-                distance.put(vertices.get(i),0);
-            }else{
-                distance.put(vertices.get(i),Integer.MAX_VALUE);
-            }
-        }
-
-        visited.add(source);
-        int currentDistance = 0;
-        V curV = source;
-
-        Map<V,E> sourceList = getNeighbours(source);
+        Map<V,Integer> dist = new HashMap<V,Integer>();
+        Map<V,V> prev = new HashMap<V,V>();
+        Set<V> allVs = new HashSet<V>();
+        boolean flag = false;
 
         for(V v : vertices){
-            if(!(sourceList.get(v) == null)){
-                distance.put(v,sourceList.get(v).length());
-            }
+
+            dist.put(v, Integer.MAX_VALUE);
+            allVs.add(v);
+
         }
 
-        int minLen = Integer.MAX_VALUE;
+        dist.put(source, 0);
 
-        while(visited.size() != vertices.size()){
 
-            for(V v : vertices){
-                if(!visited.contains(v)){
-                    if(distance.get(v) < minLen){
-                        curV = v;
+        while(!allVs.isEmpty()){
+            V curV = source;
+
+            if(flag){
+                int min = Integer.MAX_VALUE;
+                for(Map.Entry<V,Integer> entry : dist.entrySet()){
+                    if(entry.getValue() < min && allVs.contains(entry.getKey())) {
+                        curV = entry.getKey();
+                        min = entry.getValue();
                     }
                 }
             }
 
-            sourceList = getNeighbours(curV);
-            currentDistance = distance.get(curV);
+            flag = true;
 
-            for(V v : vertices){
-                if(sourceList.get(v) != null) {
-                    if (currentDistance + sourceList.get(v).length() < distance.get(v)) {
-                        distance.put(v, currentDistance + sourceList.get(v).length());
+            allVs.remove(curV);
+            int alt;
+            for(Map.Entry<V,E> entry : getNeighbours(curV).entrySet()){
+                if(allVs.contains(entry.getKey())){
+                    alt = dist.get(curV) + getEdge(entry.getKey(),curV).length();
+                    if(alt < dist.get(entry.getKey())){
+                        dist.put(entry.getKey(), alt);
+                        prev.put(entry.getKey(), curV);
                     }
                 }
             }
 
-            visited.add(curV);
+
         }
 
-        for(V v: vertices){
-            System.out.println(distance.get(v));
-        }
 
-        return distance;
+        return dist;
     }
 
     /**
@@ -351,7 +476,6 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
             }else{
                 totalLength += temp.length();
             }
-
         }
 
         return totalLength;
@@ -425,21 +549,21 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
 
         return null;
     }
-
-    private class ParentList {
-
-        ArrayList<V> parents = new ArrayList<>();
-        Vertex v = new Vertex(1, "Parent");
-
-        public ParentList(V v){
-            this.v = v;
-        }
-
-        private void add(V v){
-            this.parents.add(v);
-        }
-
-    }
+//
+//    private class ParentList {
+//
+//        ArrayList<V> parents = new ArrayList<>();
+//        Vertex v = new Vertex(1, "Parent");
+//
+//        public ParentList(V v){
+//            this.v = v;
+//        }
+//
+//        private void add(V v){
+//            this.parents.add(v);
+//        }
+//
+//    }
 
     //// add all new code above this line ////
 
