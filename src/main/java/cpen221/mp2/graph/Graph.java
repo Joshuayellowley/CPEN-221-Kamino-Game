@@ -229,21 +229,21 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
      */
     @Override
     public List<V> shortestPath(V source, V sink) {
-            if(!vertex(source) || !vertex(sink)){
-                return new ArrayList<>();
-            }
-            Map<V,V> sourcePaths = doDijkstra(source);
-            List<V> reversePath = new ArrayList<>();
-            List<V> path = new ArrayList<>();
-            reversePath.add(sink);
-            V curV = sink;
-            while(curV != source){
-              reversePath.add(sourcePaths.get(curV));
-              curV = sourcePaths.get(curV);
-            }
-            for(int i = reversePath.size()-1; i >= 0; i--){
-                path.add(reversePath.get(i));
-            }
+        if(!vertex(source) || !vertex(sink)){
+            return new ArrayList<>();
+        }
+        Map<V,V> sourcePaths = doDijkstra(source);
+        List<V> reversePath = new ArrayList<>();
+        List<V> path = new ArrayList<>();
+        reversePath.add(sink);
+        V curV = sink;
+        while(curV != source){
+            reversePath.add(sourcePaths.get(curV));
+            curV = sourcePaths.get(curV);
+        }
+        for(int i = reversePath.size()-1; i >= 0; i--){
+            path.add(reversePath.get(i));
+        }
         return path;
     }
 
@@ -381,8 +381,8 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
                     }
                 }
 
-                path.add(chosenEdge);
-                visited.add(chosenVert);
+            path.add(chosenEdge);
+            visited.add(chosenVert);
         }
         return path;
     }
