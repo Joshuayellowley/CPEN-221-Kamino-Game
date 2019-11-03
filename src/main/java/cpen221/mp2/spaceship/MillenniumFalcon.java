@@ -4,6 +4,7 @@ import cpen221.mp2.controllers.GathererStage;
 import cpen221.mp2.controllers.HunterStage;
 import cpen221.mp2.controllers.Spaceship;
 import cpen221.mp2.graph.ImGraph;
+import cpen221.mp2.models.GameModel;
 import cpen221.mp2.models.Link;
 import cpen221.mp2.models.Planet;
 import cpen221.mp2.models.PlanetStatus;
@@ -19,10 +20,9 @@ import java.util.NoSuchElementException;
  */
 public class MillenniumFalcon implements Spaceship {
     long startTime = System.nanoTime(); // start time of rescue phase
-
     @Override
     public void hunt(HunterStage state) {
-        // TODO: Implement this method
+
     }
 
     @Override
