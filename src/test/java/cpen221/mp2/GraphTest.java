@@ -424,7 +424,7 @@ public class GraphTest {
         Graph<Vertex, Edge<Vertex>> g = new Graph<>();
         Vertex v5 = new Vertex(5, "E");
         Vertex v6 = new Vertex(6, "F");
-        Edge e1 = new Edge(v5,v6);
+        Edge e1 =  new Edge(v5,v6);
         assertEquals(new ArrayList<>(), g.shortestPath(v5, v6));
         assertEquals(new HashMap<Vertex,Edge>(), g.getNeighbours(v5));
         assertEquals(new HashSet<Vertex>(), g.allVertices());
