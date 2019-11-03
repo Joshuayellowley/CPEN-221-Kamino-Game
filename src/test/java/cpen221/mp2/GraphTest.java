@@ -475,4 +475,14 @@ public class GraphTest {
         assertEquals(new HashSet<Vertex>(),g.search(v5,12));
         assertEquals(new HashSet<Vertex>(),g.search(v5,3));
     }
+
+
+    @Test
+    public void testEdges(){
+        Vertex v1 = new Vertex(1, "A");
+        Vertex v2 = new Vertex(2, "C");
+        assertFalse(v1.equals(v2));
+        assertEquals(1, v1.id());
+        Edge e1 = new Edge()
+    }
 }

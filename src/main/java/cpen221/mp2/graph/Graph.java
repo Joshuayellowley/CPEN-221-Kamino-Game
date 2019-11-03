@@ -14,7 +14,8 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
 
     // Representation Invariant:
     // each V in vertices is unique, and cannot be null.
-    // No vertex can exist without being connected to another
+    // No vertex can exist without being connected to another, except the first
+    // Vertex added to the graph
     // each E in Edges must connect two vertices, and cannot be null
 
     // Abstraction Function:
@@ -73,7 +74,7 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
                 }
             }
         }
-        System.out.println("Edge already contained in the edges list");
+        System.out.println("Edge already contained in the edges list or is not connected to an existing vertex");
         return false;
     }
 
@@ -383,11 +384,6 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
 
                 path.add(chosenEdge);
                 visited.add(chosenVert);
-        }
-        for(E poop : path) {
-            System.out.println("------");
-            System.out.println(poop.v1().id());
-            System.out.println(poop.v2().id());
         }
         return path;
     }
