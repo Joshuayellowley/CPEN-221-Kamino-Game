@@ -38,7 +38,6 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
             vertices.add(v);
             return true;
         } else {
-            System.out.println("Vertex already contained in the vertex list");
             return false;
         }
     }
@@ -209,7 +208,7 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
      * If v is not in graph, returns an empty set.
      */
     public Map<V, E> getNeighbours(V v) {
-        if(!this.vertices.contains(v)){
+        if(!this.vertex(v)){
             return new HashMap<>();
         }
         Set<E> edgeSet = this.allEdges(v);
