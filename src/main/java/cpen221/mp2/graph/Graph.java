@@ -9,8 +9,8 @@ import java.util.*;
  */
 public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>, IGraph<V, E> {
 
-    private ArrayList<V> vertices = new ArrayList<>();
-    private ArrayList<E> edges = new ArrayList<>();
+    public Set<V> vertices = new HashSet<>();
+    public Set<E> edges = new HashSet<>();
 
     public Graph() {
     }
@@ -29,7 +29,6 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
             vertices.add(v);
             return true;
         } else {
-            System.out.println("Vertex already contained in the vertex list");
             return false;
         }
     }
@@ -55,14 +54,16 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
             return false;
         }
         if (!edges.contains(e)) {
-            addVertex(e.v1());
-            addVertex(e.v2());
-            edges.add(e);
+            //if(!vertices.contains(e.v1()))
+                addVertex(e.v1());
+            //if(!vertices.contains(e.v2()))
+                addVertex(e.v2());
+                edges.add(e);
             return true;
         } else {
-            System.out.println("Edge already contained in the edges list");
             return false;
         }
+
     }
 
     /**
@@ -191,10 +192,7 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
      * @return all edges in the graph
      */
     public Set<E> allEdges() {
-        Set<E> newEdges = new HashSet<>();
-        for (E e : this.edges) {
-            newEdges.add((E) new Edge(e.v1(), e.v2(), e.length()));
-        }
+        Set<E> newEdges = new HashSet<>(edges);
         return newEdges;
     }
 
@@ -427,11 +425,12 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
         ArrayList<V> allVertices = new ArrayList<>(this.vertices);
         ArrayList<V> visited = new ArrayList<>();
         ArrayList<E> path = new ArrayList<>();
+        Object[] temp = this.edges.toArray();
 
         visited.add(allVertices.get(0));
         while(!visited.containsAll(allVertices)) {
             int minLen = Integer.MAX_VALUE;
-                E chosenEdge = this.edges.get(0);
+                E chosenEdge = (E) temp[0];
                 V chosenVert = visited.get(0);
                 for(V v: visited) {
                     for (Map.Entry<V, E> entry : this.getNeighbours(v).entrySet()) {
