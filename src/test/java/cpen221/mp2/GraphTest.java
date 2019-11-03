@@ -481,8 +481,62 @@ public class GraphTest {
     public void testEdges(){
         Vertex v1 = new Vertex(1, "A");
         Vertex v2 = new Vertex(2, "C");
+        Vertex v3 = new Vertex(3, "D");
+        Vertex v4 = new Vertex(4, "E");
         assertFalse(v1.equals(v2));
         assertEquals(1, v1.id());
-        Edge e1 = new Edge()
+        assertEquals("A", v1.name());
+        v1.updateName("B");
+        assertEquals("B",v1.name());
+
+        Edge e1 = new Edge(v1, v2);
+        Edge e2 = new Edge(v2, v1);
+        Edge e3 = new Edge(v3,v4);
+        Edge e4 = new Edge(v1,v4);
+        Edge e5 = new Edge(v4,v2);
+
+        assertEquals(e1,e2);
+        assertFalse(e1.incident(null));
+        assertFalse(e1.intersects(null));
+        assertTrue(e1.intersects(e2));
+        assertEquals(e1.distinctVertex(e3),v1);
+        assertEquals(e1.distinctVertex(e4),v2);
+        assertEquals(e1.distinctVertex(e5),v1);
+        assertFalse(v1.equals(e1));
     }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testBadEdges1(){
+        Edge e1 = new Edge(null,null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testBadEdges2(){
+        Vertex v1 = new Vertex(1, "A");
+        Edge e1 = new Edge(v1,v1);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testBadEdges3(){
+        Vertex v1 = new Vertex(1, "A");
+        Vertex v2 = new Vertex(2, "B");
+        Edge e1 = new Edge(v1,v2,-1);
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void testBadEdges4(){
+        Vertex v1 = new Vertex(1, "A");
+        Vertex v2 = new Vertex(2, "B");
+        Edge e1 = new Edge(v1,v2);
+        e1.distinctVertex(e1);
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void testBadEdges5(){
+        Vertex v1 = new Vertex(1, "A");
+        Vertex v2 = new Vertex(2, "B");
+        Edge e1 = new Edge(v1,v2);
+        e1.intersection(null);
+    }
+
 }
