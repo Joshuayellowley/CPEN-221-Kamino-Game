@@ -19,7 +19,6 @@ public class MillenniumFalcon implements Spaceship {
 
     @Override
     public void hunt(HunterStage state){
-        // TODO: Implement this method
 
         PlanetStatus[] nStats;
         double maxSignal = 0;
@@ -42,27 +41,63 @@ public class MillenniumFalcon implements Spaceship {
 
     @Override
     public void gather(GathererStage state) {
-        // TODO: Implement this method
 
         ImGraph graph = state.planetGraph();
         Set<Planet> allPlanets = state.planets();
+        Object[] planetList = allPlanets.toArray();
+
         Set<Planet> visited = new HashSet<>();
         List<Link> minTree = graph.minimumSpanningTree();
         Set<Planet> canVisit = new HashSet<>();
-        boolean goingBack = true;
+        boolean goingBack = false;
+        boolean onTheWay = false;
 
-        while(!state.currentPlanet().equals(state.earth())){
+        Planet mostEfficient = state.earth();
+        double efficiency = 0;
+
+        while (!(state.currentPlanet().equals(state.earth()) && goingBack) ){
 
             visited.add(state.currentPlanet());
+            efficiency = 0;
 
 
-
-            if(goingBack){
-                state.moveTo((Planet) graph.shortestPath(state.currentPlanet(),state.earth()).get(1));
+            if(state.currentPlanet().equals(mostEfficient)){
+                onTheWay = false;
+                mostEfficient = state.earth();
             }
+
+
+            if(!onTheWay && !goingBack) {
+                for (int i = 0; i < allPlanets.size(); i++) {
+                    Planet temp = (Planet) planetList[i];
+
+                    int tempSpice = temp.spice();
+                    double fuelToTemp = graph.pathLength(graph.shortestPath(state.currentPlanet(), temp));
+                    double tempEfficiency = tempSpice / fuelToTemp;
+                    double fuelToEarth = graph.pathLength(graph.shortestPath(temp, state.earth()));
+
+                    if (tempEfficiency > efficiency && !visited.contains(temp)) {
+                        if (fuelToTemp + fuelToEarth <= state.fuelRemaining()) {
+                            onTheWay = true;
+                            efficiency = tempEfficiency;
+                            mostEfficient = temp;
+                        }
+                    }
+                    if(!onTheWay){
+                        goingBack = true;
+                    }
+                }
+            }else{
+                state.moveTo((Planet) graph.shortestPath(state.currentPlanet(), mostEfficient).get(1));
+            }
+
+            if (goingBack) {
+                state.moveTo((Planet) graph.shortestPath(state.currentPlanet(), state.earth()).get(1));
+            }
+
+
         }
 
-
     }
-
 }
+

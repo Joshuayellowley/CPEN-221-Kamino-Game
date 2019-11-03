@@ -46,8 +46,7 @@ public class Kamino implements Controller {
         ships = () -> {
             try {
                 return spaceship.getClass().newInstance();
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 System.err.println("fatal error: failed to create new Spaceship");
                 System.exit(1);
             }
@@ -121,8 +120,7 @@ public class Kamino implements Controller {
                     System.err.println("Error: invalid argument \"" + argv[i] + '"');
                     return;
                 }
-            }
-            catch (NumberFormatException e) {
+            } catch (NumberFormatException e) {
                 System.err.println("Invalid seed \"" + argv[i] + '"');
                 return;
             }
@@ -167,8 +165,7 @@ public class Kamino implements Controller {
         }
         try {
             init(Long.valueOf(seed), ships.get());
-        }
-        catch (NumberFormatException ex) {
+        } catch (NumberFormatException ex) {
             init(RNG.nextLong(), ships.get());
         }
     }
@@ -207,8 +204,7 @@ public class Kamino implements Controller {
     public synchronized void update() {
         try {
             model.update(TICKTIME);
-        }
-        catch (SolutionFailedException e) {
+        } catch (SolutionFailedException e) {
             if (!failed) {
                 fail(e);
             }
@@ -273,11 +269,9 @@ public class Kamino implements Controller {
                 hunt();
                 gather();
                 view.endGame(model.score());
-            }
-            catch (SolutionFailedException e) {
+            } catch (SolutionFailedException e) {
                 fail(e);
-            }
-            catch (AbortException e) {
+            } catch (AbortException e) {
             }
         }
 
