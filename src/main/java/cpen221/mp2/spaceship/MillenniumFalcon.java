@@ -3,6 +3,7 @@ package cpen221.mp2.spaceship;
 import cpen221.mp2.controllers.GathererStage;
 import cpen221.mp2.controllers.HunterStage;
 import cpen221.mp2.controllers.Spaceship;
+import cpen221.mp2.graph.Graph;
 import cpen221.mp2.graph.ImGraph;
 import cpen221.mp2.models.Link;
 import cpen221.mp2.models.Planet;
@@ -47,8 +48,6 @@ public class MillenniumFalcon implements Spaceship {
         Planet earth = state.earth();
         Set<Planet> allPlanets = state.planets();
         Object[] planetList = allPlanets.toArray();
-
-        Set<Planet> visited = new HashSet<>();
         List minTree = graph.minimumSpanningTree();
         Set<Planet> canVisit = new HashSet<>();
 
@@ -63,39 +62,88 @@ public class MillenniumFalcon implements Spaceship {
             double score = 0;
             score += p.spice();
 //            score /= graph.pathLength(graph.shortestPath(p,kamino));
-/*
-            score /= graph.pathLength(graph.shortestPath(p,earth));
-*/
+//            score /= graph.pathLength(graph.shortestPath(p,earth));
             scores.put(score,p);
         }
 
         Map descendingScores = scores.descendingMap();
 
         ArrayList<Planet> bestPlanets = new ArrayList<>(descendingScores.values());
-
-        while(state.fuelRemaining() > 0){
-            for(Planet p: bestPlanets){
-                if(p.equals(state.currentPlanet()))
-                    continue;
-                double distToEarth = graph.pathLength(graph.shortestPath(p,earth));
-                double distFromHere = graph.pathLength(graph.shortestPath(state.currentPlanet(),p));
-                if(distToEarth + distFromHere <= state.fuelRemaining()){
-                    moveOnPath(graph.shortestPath(state.currentPlanet(), p), state);
-                }else{
-                    moveOnPath(graph.shortestPath(state.currentPlanet(), state.earth()), state);
-                    return;
-                }
+        Set<Planet> visited = new HashSet<>();
+        Set<Neighbourhood> hoods = new TreeSet<>();
+        System.out.println("Hi");
+            for(int i = 0; i < 10; i++){
+                Neighbourhood n = new Neighbourhood(bestPlanets.get(i), graph.diameter()/10,state);
+                System.out.println(n);
+                hoods.add(n);
             }
-            List currPath = graph.shortestPath(state.currentPlanet(),bestPlanets.get(0));
-        }
+
+            for(Neighbourhood n: hoods){
+                n.traverseAllPlanets();
+            }
+            moveOnPath(graph.shortestPath(state.currentPlanet(), state.earth()), state, new HashSet<>());
+
 
 
 
     }
 
-    private void moveOnPath(List<Planet> path, GathererStage state){
+    private void moveOnPath(List<Planet> path, GathererStage state, Set<Planet> visited){
         for(int i = 1; i < path.size(); i++){
+            visited.add(path.get(i));
             state.moveTo(path.get(i));
+        }
+    }
+
+
+    private class Neighbourhood extends Graph<Planet, Link> implements Comparable<Neighbourhood> {
+        //RI: Planets are unique, and within diameter of head
+        //AF: A set of planets in a graph that are within a diameter from a head planet
+        private Planet head;
+        private Set<Planet> neighborhood;
+        private Set<Planet> visited;
+        private Planet currPlanet;
+        private GathererStage state;
+        private int spice;
+
+        private Neighbourhood(Planet head, int diameter, GathererStage state){
+            this.head = head;
+            this.neighborhood = search(head,diameter);
+            this.currPlanet = head;
+            this.state = state;
+            this.spice = getAllSpice();
+            this.visited = new HashSet<>();
+        }
+
+        private void traverseAllPlanets(){
+            for(Planet p: neighborhood){
+                List path = shortestPath(currPlanet, p);
+                if(pathLength(path) + pathLength(shortestPath(p, state.earth())) >= state.fuelRemaining()){
+                    moveOnPath(path,state,visited);
+                    currPlanet = state.currentPlanet();
+                }
+                else{
+                    moveOnPath(shortestPath(state.currentPlanet(), state.earth()), state, new HashSet<>());
+                    return;
+                }
+
+            }
+        }
+
+        private int getAllSpice(){
+            int spice = 0;
+            for(Planet p: neighborhood){
+                spice += p.spice();
+            }
+            return spice;
+        }
+
+
+
+
+        @Override
+        public int compareTo(Neighbourhood neighbourhood) {
+            return Integer.compare(this.spice, neighbourhood.spice);
         }
     }
 }

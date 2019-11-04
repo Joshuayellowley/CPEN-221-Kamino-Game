@@ -21,7 +21,11 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
     // Abstraction Function:
     // Represents a graph of a set V's which may/may not be connected by E's
 
-    public Graph() {
+    public Graph() {}
+
+    public Graph(Set<V> vertices, Set<E> edges) {
+        this.vertices = new HashSet<>(vertices);
+        this.edges = new HashSet<>(edges);
     }
 
     /**
