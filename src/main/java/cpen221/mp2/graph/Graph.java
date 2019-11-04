@@ -14,7 +14,8 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
 
     // Representation Invariant:
     // each V in vertices is unique, and cannot be null.
-    // No vertex can exist without being connected to another
+    // No vertex can exist without being connected to another, except the first
+    // Vertex added to the graph
     // each E in Edges must connect two vertices, and cannot be null
 
     // Abstraction Function:
@@ -37,7 +38,6 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
             vertices.add(v);
             return true;
         } else {
-            System.out.println("Vertex already contained in the vertex list");
             return false;
         }
     }
@@ -73,7 +73,7 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
                 }
             }
         }
-        System.out.println("Edge already contained in the edges list");
+        System.out.println("Edge already contained in the edges list or is not connected to an existing vertex");
         return false;
     }
 
@@ -208,7 +208,7 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
      * If v is not in graph, returns an empty set.
      */
     public Map<V, E> getNeighbours(V v) {
-        if(!this.vertices.contains(v)){
+        if(!this.vertex(v)){
             return new HashMap<>();
         }
         Set<E> edgeSet = this.allEdges(v);
@@ -367,27 +367,22 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
         visited.add(allVertices.get(0));
         while(!visited.containsAll(allVertices)) {
             int minLen = Integer.MAX_VALUE;
-            E chosenEdge = (E) this.edges.toArray()[0];
-            V chosenVert = visited.get(0);
-            for(V v: visited) {
-                for (Map.Entry<V, E> entry : this.getNeighbours(v).entrySet()) {
-                    if (entry.getValue().length() < minLen
-                            && !path.contains(entry.getValue())
-                            && !visited.contains(entry.getKey())) {
-                        minLen = entry.getValue().length();
-                        chosenEdge = entry.getValue();
-                        chosenVert = entry.getKey();
+                E chosenEdge = (E) this.edges.toArray()[0];
+                V chosenVert = visited.get(0);
+                for(V v: visited) {
+                    for (Map.Entry<V, E> entry : this.getNeighbours(v).entrySet()) {
+                        if (entry.getValue().length() < minLen
+                                && !path.contains(entry.getValue())
+                                && !visited.contains(entry.getKey())) {
+                            minLen = entry.getValue().length();
+                            chosenEdge = entry.getValue();
+                            chosenVert = entry.getKey();
+                        }
                     }
                 }
-            }
 
             path.add(chosenEdge);
             visited.add(chosenVert);
-        }
-        for(E poop : path) {
-            System.out.println("------");
-            System.out.println(poop.v1().id());
-            System.out.println(poop.v2().id());
         }
         return path;
     }
