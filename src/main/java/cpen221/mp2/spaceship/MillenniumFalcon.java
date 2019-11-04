@@ -43,61 +43,60 @@ public class MillenniumFalcon implements Spaceship {
     public void gather(GathererStage state) {
 
         ImGraph graph = state.planetGraph();
+        Planet kamino = state.currentPlanet();
+        Planet earth = state.earth();
         Set<Planet> allPlanets = state.planets();
         Object[] planetList = allPlanets.toArray();
 
         Set<Planet> visited = new HashSet<>();
-        List<Link> minTree = graph.minimumSpanningTree();
+        List minTree = graph.minimumSpanningTree();
         Set<Planet> canVisit = new HashSet<>();
+
         boolean goingBack = false;
         boolean onTheWay = false;
 
-        Planet mostEfficient = state.earth();
-        double efficiency = 0;
-
-        while (!(state.currentPlanet().equals(state.earth()) && goingBack) ){
-
-            visited.add(state.currentPlanet());
-            efficiency = 0;
-
-
-            if(state.currentPlanet().equals(mostEfficient)){
-                onTheWay = false;
-                mostEfficient = state.earth();
-            }
-
-
-            if(!onTheWay && !goingBack) {
-                for (int i = 0; i < allPlanets.size(); i++) {
-                    Planet temp = (Planet) planetList[i];
-
-                    int tempSpice = temp.spice();
-                    double fuelToTemp = graph.pathLength(graph.shortestPath(state.currentPlanet(), temp));
-                    double tempEfficiency = tempSpice / fuelToTemp;
-                    double fuelToEarth = graph.pathLength(graph.shortestPath(temp, state.earth()));
-
-                    if (tempEfficiency > efficiency && !visited.contains(temp)) {
-                        if (fuelToTemp + fuelToEarth <= state.fuelRemaining()) {
-                            onTheWay = true;
-                            efficiency = tempEfficiency;
-                            mostEfficient = temp;
-                        }
-                    }
-                    if(!onTheWay){
-                        goingBack = true;
-                    }
-                }
-            }else{
-                state.moveTo((Planet) graph.shortestPath(state.currentPlanet(), mostEfficient).get(1));
-            }
-
-            if (goingBack) {
-                state.moveTo((Planet) graph.shortestPath(state.currentPlanet(), state.earth()).get(1));
-            }
-
-
+        Planet mostEfficient = earth;
+        TreeMap<Double, Planet> scores = new TreeMap<>();
+        allPlanets.remove(kamino);
+        allPlanets.remove(earth);
+        for(Planet p : allPlanets){
+            double score = 0;
+            score += p.spice();
+//            score /= graph.pathLength(graph.shortestPath(p,kamino));
+/*
+            score /= graph.pathLength(graph.shortestPath(p,earth));
+*/
+            scores.put(score,p);
         }
 
+        Map descendingScores = scores.descendingMap();
+
+        ArrayList<Planet> bestPlanets = new ArrayList<>(descendingScores.values());
+
+        while(state.fuelRemaining() > 0){
+            for(Planet p: bestPlanets){
+                if(p.equals(state.currentPlanet()))
+                    continue;
+                double distToEarth = graph.pathLength(graph.shortestPath(p,earth));
+                double distFromHere = graph.pathLength(graph.shortestPath(state.currentPlanet(),p));
+                if(distToEarth + distFromHere <= state.fuelRemaining()){
+                    moveOnPath(graph.shortestPath(state.currentPlanet(), p), state);
+                }else{
+                    moveOnPath(graph.shortestPath(state.currentPlanet(), state.earth()), state);
+                    return;
+                }
+            }
+            List currPath = graph.shortestPath(state.currentPlanet(),bestPlanets.get(0));
+        }
+
+
+
+    }
+
+    private void moveOnPath(List<Planet> path, GathererStage state){
+        for(int i = 1; i < path.size(); i++){
+            state.moveTo(path.get(i));
+        }
     }
 }
 
