@@ -63,30 +63,40 @@ public class MillenniumFalcon implements Spaceship {
 
             if(state.currentPlanet().equals(mostEfficient)){
                 onTheWay = false;
-                mostEfficient = state.earth();
             }
 
+            canVisit = graph.search(state.currentPlanet(), graph.diameter()/100000);
+
+            System.out.println(canVisit.toString());
 
             if(!onTheWay && !goingBack) {
-                for (int i = 0; i < allPlanets.size(); i++) {
+                for (int i = 0; i < canVisit.size(); i++) {
                     Planet temp = (Planet) planetList[i];
 
-                    int tempSpice = temp.spice();
-                    double fuelToTemp = graph.pathLength(graph.shortestPath(state.currentPlanet(), temp));
+                    int tempSpice = 0;
+                    List<Planet> spiceList =  graph.shortestPath(state.currentPlanet(),temp);
+                    for(Planet p : spiceList){
+                        tempSpice += p.spice();
+                    }
+
+                    double fuelToTemp = graph.pathLength(spiceList);
                     double tempEfficiency = tempSpice / fuelToTemp;
+
                     double fuelToEarth = graph.pathLength(graph.shortestPath(temp, state.earth()));
 
-                    if (tempEfficiency > efficiency && !visited.contains(temp)) {
+                    if (tempEfficiency > efficiency) {
                         if (fuelToTemp + fuelToEarth <= state.fuelRemaining()) {
-                            onTheWay = true;
-                            efficiency = tempEfficiency;
-                            mostEfficient = temp;
+                                onTheWay = true;
+                                efficiency = tempEfficiency;
+                                mostEfficient = temp;
                         }
                     }
+
                     if(!onTheWay){
                         goingBack = true;
                     }
                 }
+                System.out.println(mostEfficient);
             }else{
                 state.moveTo((Planet) graph.shortestPath(state.currentPlanet(), mostEfficient).get(1));
             }
