@@ -21,18 +21,12 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
     // Abstraction Function:
     // Represents a graph of a set V's which may/may not be connected by E's
 
-    private void checkRep() {
-        if (vertices.size() > 1) {
-
-        }
-    }
-
 
     public Graph() {
     }
 
     private boolean isConnected() {
-        int count = 0;
+        int count;
         for (V v : this.vertices) {
             count = 0;
             for (E e : this.edges) {
@@ -100,8 +94,10 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
         }
         if (vertices.contains(e.v1())) {
             if (vertices.contains(e.v2())) {
-                edges.add(e);
-                return true;
+                if(!edges.contains(e)){
+                    edges.add(e);
+                    return true;
+                }
             }
         }
         return false;
@@ -113,9 +109,7 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
      * @param e the edge to check in the graph
      * @return true if e is an edge in the graph and not null, and false otherwise
      */
-    public boolean edge(E e) {
-        return edges.contains(e);
-    }
+    public boolean edge(E e) { return edges.contains(e); }
 
     /**
      * Check if v1-v2 is an edge in the graph
@@ -269,23 +263,27 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
             return new ArrayList<>();
         }
 
-        Map<V, V> sourcePaths = doDijkstra(source);
-        List<V> reversePath = new ArrayList<>();
-        List<V> path = new ArrayList<>();
-        reversePath.add(sink);
-        V curV = sink;
-        if (!sourcePaths.containsValue(source) || !sourcePaths.containsKey(sink)) {
-            throw new IllegalArgumentException();
-        }
-        while (curV != source) {
-            reversePath.add(sourcePaths.get(curV));
-            curV = sourcePaths.get(curV);
-        }
-        for (int i = reversePath.size() - 1; i >= 0; i--) {
-            path.add(reversePath.get(i));
-        }
+        try {
+            Map<V, V> sourcePaths = doDijkstra(source);
+            List<V> reversePath = new ArrayList<>();
+            List<V> path = new ArrayList<>();
+            reversePath.add(sink);
+            V curV = sink;
+            if (!sourcePaths.containsValue(source) || !sourcePaths.containsKey(sink)) {
+                return new ArrayList<>();
+            }
+            while (curV != source) {
+                reversePath.add(sourcePaths.get(curV));
+                curV = sourcePaths.get(curV);
+            }
+            for (int i = reversePath.size() - 1; i >= 0; i--) {
+                path.add(reversePath.get(i));
+            }
 
-        return path;
+            return path;
+        }catch (Exception e){
+            return new ArrayList<>();
+        }
     }
 
     /**
@@ -510,7 +508,6 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
     public int diameter() {
 
         int max = 0;
-
         for (V v : vertices) {
             for (V v1 : vertices) {
                 if (this.getAllShortestPaths(v).get(v1) > max) {
