@@ -109,7 +109,9 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
      * @param e the edge to check in the graph
      * @return true if e is an edge in the graph and not null, and false otherwise
      */
-    public boolean edge(E e) { return edges.contains(e); }
+    public boolean edge(E e) {
+        return edges.contains(e);
+    }
 
     /**
      * Check if v1-v2 is an edge in the graph
