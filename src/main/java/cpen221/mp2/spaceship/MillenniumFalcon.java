@@ -21,22 +21,56 @@ public class MillenniumFalcon implements Spaceship {
     public void hunt(HunterStage state){
 
         PlanetStatus[] nStats;
+
         double maxSignal = 0;
         int maxId = 0;
+        Set<Integer> deadEnds = new HashSet<>();
+        Set<Integer> visited = new HashSet<>();
 
         while(!state.onKamino()) {
+            visited.add(state.currentID());
             nStats = state.neighbors();
-
-            for(PlanetStatus s : nStats){
-                if(s.signal() >= maxSignal){
-                    maxId = s.id();
-                    maxSignal = s.signal();
+            ArrayList<PlanetStatus> stats = new ArrayList<>();
+            for(PlanetStatus ps: nStats){
+                if(!deadEnds.contains(ps.id())){
+                    stats.add(ps);
+                }
+            }
+            if(stats.size() == 1){
+                deadEnds.add(state.currentID());
+                state.moveTo(stats.get(0).id());
+            }
+            else {
+                maxId = 0;
+                maxSignal = 0;
+                for (PlanetStatus s : nStats) {
+                    if (s.signal() >= maxSignal && !deadEnds.contains(s.id()) && !visited.contains(s.id() )) {
+                        maxId = s.id();
+                        maxSignal = s.signal();
+                    }
+                }
+                if(maxSignal == 0){
+                    System.out.println("hi");
+                    deadEnds.add(state.currentID());
+                    if(stats.isEmpty()){
+                        System.out.println(deadEnds.toString());
+                        hunt(state);
+                        return;
+                    }
+                    else {
+                        state.moveTo(stats.get(0).id());
+                    }
+                }
+                else{
+                    state.moveTo(maxId);
                 }
             }
 
-            state.moveTo(maxId);
-
         }
+
+
+
+
     }
 
     @Override
