@@ -21,49 +21,41 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
     // Abstraction Function:
     // Represents a graph of a set V's which may/may not be connected by E's
 
-    private void checkRep(){
-
-        if(vertices.size() > 1){
+    private void checkRep() {
+        if (vertices.size() > 1) {
 
         }
-
-
     }
 
 
     public Graph() {
     }
 
-    private  boolean isConnected(){
+    private boolean isConnected() {
         int count = 0;
-        for(V v: this.vertices){
+        for (V v : this.vertices) {
             count = 0;
-            for(E e: this.edges){
-                if(e.incident(v)){
+            for (E e : this.edges) {
+                if (e.incident(v)) {
                     count++;
                 }
             }
-            if(count == 0){
+            if (count == 0) {
                 return false;
             }
         }
         return true;
     }
 
-    private boolean isConnected(V v){
-
+    private boolean isConnected(V v) {
         int count = 0;
-
-            for(E e: this.edges){
-                if(e.incident(v)){
-                    count++;
-                }
+        for (E e : this.edges) {
+            if (e.incident(v)) {
+                count++;
             }
-
+        }
         return count != 0;
     }
-
-
 
 
     /**
@@ -97,6 +89,7 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
     /**
      * Adds an edge of the graph if e is incident with any V in vertices
      * Also adds any vertex of this edge to the graph if it does not already exist
+     *
      * @param e the edge to add to the graph
      * @return true iff e is an edge and is not already in the graph
      * and it connects to another vertex, and false otherwise
@@ -105,8 +98,8 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
         if (e == null) {
             return false;
         }
-        if(vertices.contains(e.v1())){
-            if(vertices.contains(e.v2())){
+        if (vertices.contains(e.v1())) {
+            if (vertices.contains(e.v2())) {
                 edges.add(e);
                 return true;
             }
@@ -149,8 +142,8 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
      * @return the length of the v1-v2 edge if this edge is part of the graph, otherwise returns 0
      */
     public int edgeLength(V v1, V v2) {
-        if(edge(v1,v2)){
-            return getEdge(v1,v2).length();
+        if (edge(v1, v2)) {
+            return getEdge(v1, v2).length();
         }
         return 0;
     }
@@ -175,7 +168,11 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
      * @return true if e existed in the graph and was removed and false otherwise
      */
     public boolean remove(E e) {
-        return edges.remove(e);
+        if(edges.contains(e)){
+            edges.remove(e);
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -188,8 +185,8 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
     public boolean remove(V v) {
         Set<E> connectedEdges = this.allEdges(v);
         if (vertex(v)) {
-            for(E e: connectedEdges){
-                if(e.incident(v)){
+            for (E e : connectedEdges) {
+                if (e.incident(v)) {
                     this.remove(e);
                 }
             }
@@ -208,7 +205,7 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
      * @return a set of all vertices in the graph
      */
     public Set<V> allVertices() {
-        return new HashSet<>(this.vertices);
+        return (this.vertices);
     }
 
     /**
@@ -221,7 +218,7 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
         Set<E> newEdges = new HashSet<>();
         for (E e : this.edges) {
             if (e.incident(v)) {
-                  newEdges.add(e);
+                newEdges.add(e);
             }
         }
         return newEdges;
@@ -234,7 +231,7 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
      * @return all edges in the graph
      */
     public Set<E> allEdges() {
-        return new HashSet<>(this.edges);
+        return (this.edges);
     }
 
     /**
@@ -246,7 +243,7 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
      * If v is not in graph, returns an empty set.
      */
     public Map<V, E> getNeighbours(V v) {
-        if(!this.vertex(v)){
+        if (!this.vertex(v)) {
             return new HashMap<>();
         }
         Set<E> edgeSet = this.allEdges(v);
@@ -268,23 +265,23 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
     @Override
     public List<V> shortestPath(V source, V sink) {
 
-        if(!vertex(source) || !vertex(sink)){
+        if (!vertex(source) || !vertex(sink)) {
             return new ArrayList<>();
         }
 
-        Map<V,V> sourcePaths = doDijkstra(source);
+        Map<V, V> sourcePaths = doDijkstra(source);
         List<V> reversePath = new ArrayList<>();
         List<V> path = new ArrayList<>();
         reversePath.add(sink);
         V curV = sink;
-        if(!sourcePaths.containsValue(source) || !sourcePaths.containsKey(sink)){
+        if (!sourcePaths.containsValue(source) || !sourcePaths.containsKey(sink)) {
             throw new IllegalArgumentException();
         }
-        while(curV != source){
+        while (curV != source) {
             reversePath.add(sourcePaths.get(curV));
             curV = sourcePaths.get(curV);
         }
-        for(int i = reversePath.size()-1; i >= 0; i--){
+        for (int i = reversePath.size() - 1; i >= 0; i--) {
             path.add(reversePath.get(i));
         }
 
@@ -293,19 +290,20 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
 
     /**
      * Helper function for shortestPath
+     *
      * @param source the start vertex
      * @return a map that maps the current Vertex to the optimal previous one.
      * Optimal meaning it has the least total distance from source, on the way to sink.
      */
 
-    private Map<V, V> doDijkstra(V source){
-        Map<V,Integer> dist = new HashMap<>();
-        Map<V,V> prev = new HashMap<>();
+    private Map<V, V> doDijkstra(V source) {
+        Map<V, Integer> dist = new HashMap<>();
+        Map<V, V> prev = new HashMap<>();
         Set<V> allVs = new HashSet<>();
         boolean flag = false;
 
-        for(V v : vertices){
-            if(isConnected(v)) {
+        for (V v : vertices) {
+            if (isConnected(v)) {
                 dist.put(v, Integer.MAX_VALUE);
                 allVs.add(v);
             }
@@ -313,16 +311,16 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
 
         dist.put(source, 0);
         int count = 0;
-        while(!allVs.isEmpty()){
+        while (!allVs.isEmpty()) {
             count++;
-            if(count > this.vertices.size()){
+            if (count > this.vertices.size()) {
                 throw new IllegalArgumentException();
             }
             V curV = source;
-            if(flag){
+            if (flag) {
                 int min = Integer.MAX_VALUE;
-                for(Map.Entry<V,Integer> entry : dist.entrySet()){
-                    if(entry.getValue() < min && allVs.contains(entry.getKey())) {
+                for (Map.Entry<V, Integer> entry : dist.entrySet()) {
+                    if (entry.getValue() < min && allVs.contains(entry.getKey())) {
                         curV = entry.getKey();
                         min = entry.getValue();
                     }
@@ -332,10 +330,10 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
             flag = true;
             allVs.remove(curV);
             int alt;
-            for(Map.Entry<V,E> entry : getNeighbours(curV).entrySet()){
-                if(allVs.contains(entry.getKey())){
-                    alt = dist.get(curV) + getEdge(entry.getKey(),curV).length();
-                    if(alt < dist.get(entry.getKey())){
+            for (Map.Entry<V, E> entry : getNeighbours(curV).entrySet()) {
+                if (allVs.contains(entry.getKey())) {
+                    alt = dist.get(curV) + getEdge(entry.getKey(), curV).length();
+                    if (alt < dist.get(entry.getKey())) {
                         dist.put(entry.getKey(), alt);
                         prev.put(entry.getKey(), curV);
                     }
@@ -351,14 +349,14 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
      * @param source the start vertex
      * @return a map of all the vertices in the graph, mapped with the shortest distance from the source.
      */
-    private Map<V,Integer> getAllShortestPaths(V source){
-        Map<V,Integer> dist = new HashMap<>();
-        Map<V,V> prev = new HashMap<>();
+    private Map<V, Integer> getAllShortestPaths(V source) {
+        Map<V, Integer> dist = new HashMap<>();
+        Map<V, V> prev = new HashMap<>();
         Set<V> allVs = new HashSet<>();
         boolean flag = false;
 
-        for(V v : vertices){
-            if(this.isConnected(v)) {
+        for (V v : vertices) {
+            if (this.isConnected(v)) {
                 dist.put(v, Integer.MAX_VALUE);
                 allVs.add(v);
             }
@@ -366,13 +364,13 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
 
         dist.put(source, 0);
 
-        while(!allVs.isEmpty()){
+        while (!allVs.isEmpty()) {
             V curV = source;
 
-            if(flag){
+            if (flag) {
                 int min = Integer.MAX_VALUE;
-                for(Map.Entry<V,Integer> entry : dist.entrySet()){
-                    if(entry.getValue() < min && allVs.contains(entry.getKey())) {
+                for (Map.Entry<V, Integer> entry : dist.entrySet()) {
+                    if (entry.getValue() < min && allVs.contains(entry.getKey())) {
                         curV = entry.getKey();
                         min = entry.getValue();
                     }
@@ -383,10 +381,10 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
 
             allVs.remove(curV);
             int alt;
-            for(Map.Entry<V,E> entry : getNeighbours(curV).entrySet()){
-                if(allVs.contains(entry.getKey())){
-                    alt = dist.get(curV) + getEdge(entry.getKey(),curV).length();
-                    if(alt < dist.get(entry.getKey())){
+            for (Map.Entry<V, E> entry : getNeighbours(curV).entrySet()) {
+                if (allVs.contains(entry.getKey())) {
+                    alt = dist.get(curV) + getEdge(entry.getKey(), curV).length();
+                    if (alt < dist.get(entry.getKey())) {
                         dist.put(entry.getKey(), alt);
                         prev.put(entry.getKey(), curV);
                     }
@@ -400,12 +398,11 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
     /**
      * Compute the minimum spanning tree of the graph.
      *
-     *
      * @return a list of edges that forms a minimum spanning tree of the graph.
-     *         If there are disconnected vertices in the graph, throw an IllegalArgumentException.
+     * If there are disconnected vertices in the graph, throw an IllegalArgumentException.
      */
     @Override
-    public List<E> minimumSpanningTree(){
+    public List<E> minimumSpanningTree() {
 
         ArrayList<V> allVertices = new ArrayList<>(this.vertices);
         ArrayList<V> visited = new ArrayList<>();
@@ -413,25 +410,25 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
 
         visited.add(allVertices.get(0));
 
-        if(!this.isConnected()){
+        if (!this.isConnected()) {
             throw new IllegalArgumentException();
         }
 
-        while(!visited.containsAll(allVertices)) {
+        while (!visited.containsAll(allVertices)) {
             int minLen = Integer.MAX_VALUE;
-                E chosenEdge = (E) this.edges.toArray()[0];
-                V chosenVert = visited.get(0);
-                for(V v: visited) {
-                    for (Map.Entry<V, E> entry : this.getNeighbours(v).entrySet()) {
-                        if (entry.getValue().length() < minLen
-                                && !path.contains(entry.getValue())
-                                && !visited.contains(entry.getKey())) {
-                            minLen = entry.getValue().length();
-                            chosenEdge = entry.getValue();
-                            chosenVert = entry.getKey();
-                        }
+            E chosenEdge = (E) this.edges.toArray()[0];
+            V chosenVert = visited.get(0);
+            for (V v : visited) {
+                for (Map.Entry<V, E> entry : this.getNeighbours(v).entrySet()) {
+                    if (entry.getValue().length() < minLen
+                            && !path.contains(entry.getValue())
+                            && !visited.contains(entry.getKey())) {
+                        minLen = entry.getValue().length();
+                        chosenEdge = entry.getValue();
+                        chosenVert = entry.getKey();
                     }
                 }
+            }
 
             path.add(chosenEdge);
             visited.add(chosenVert);
@@ -439,7 +436,7 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
 
         System.out.println(path.size());
 
-        for(E poop : path) {
+        for (E poop : path) {
             System.out.println("------");
             System.out.println(poop.v1().id());
             System.out.println(poop.v2().id());
@@ -454,20 +451,19 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
      *
      * @param path indicates the vertices on the given path
      * @return the length of path, if all vertices in path exist in graph and are connected in the given order.
-     *         If given path does not contain connected vertices or there are vertices not within the graph,
-     *         return Integer.MAX_VALUE.
-     *
+     * If given path does not contain connected vertices or there are vertices not within the graph,
+     * return Integer.MAX_VALUE.
      */
     @Override
-    public int pathLength(List<V> path){
+    public int pathLength(List<V> path) {
         int totalLength = 0;
-        for(int i = 0; i < path.size() - 1; i++){
+        for (int i = 0; i < path.size() - 1; i++) {
 
-            E temp = getEdge(path.get(i),path.get(i+1));
+            E temp = getEdge(path.get(i), path.get(i + 1));
 
-            if(temp == null){
+            if (temp == null) {
                 return Integer.MAX_VALUE;
-            }else{
+            } else {
                 totalLength += temp.length();
             }
         }
@@ -485,14 +481,14 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
      */
     @Override
     public Set<V> search(V v, int range) {
-        if(!vertex(v)) {
+        if (!vertex(v)) {
             return new HashSet<>();
         }
-        Map<V,Integer> vertexDistance = this.getAllShortestPaths(v);
+        Map<V, Integer> vertexDistance = this.getAllShortestPaths(v);
         Set<V> inRange = new HashSet<>();
 
-        for(V vertex : vertices){
-            if(vertexDistance.get(vertex) <= range && !v.equals(vertex)){
+        for (V vertex : vertices) {
+            if (vertexDistance.get(vertex) <= range && !v.equals(vertex)) {
                 inRange.add(vertex);
             }
         }
@@ -515,9 +511,9 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
 
         int max = 0;
 
-        for(V v: vertices){
-            for(V v1: vertices){
-                if(this.getAllShortestPaths(v).get(v1) > max){
+        for (V v : vertices) {
+            for (V v1 : vertices) {
+                if (this.getAllShortestPaths(v).get(v1) > max) {
                     max = this.getAllShortestPaths(v).get(v1);
                 }
             }
@@ -537,11 +533,11 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
      */
     @Override
     public E getEdge(V v1, V v2) {
-        if(!vertex(v1) || !vertex(v2)){
+        if (!vertex(v1) || !vertex(v2)) {
             return null;
         }
-        for(E edge : edges){
-            if(edge.incident(v1) && edge.incident(v2)){
+        for (E edge : edges) {
+            if (edge.incident(v1) && edge.incident(v2)) {
                 return edge;
             }
         }
@@ -559,7 +555,7 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
      * <p>
      * You will need to implement allVertices() and allEdges(V v) for this
      * method to run correctly
-     *</p>
+     * </p>
      * <p><strong>requires:</strong> this graph is connected</p>
      *
      * @param rng random number generator to select edges at random

@@ -1,8 +1,13 @@
 package cpen221.mp2;
 
+import cpen221.mp2.controllers.Kamino;
 import cpen221.mp2.graph.Edge;
 import cpen221.mp2.graph.Graph;
 import cpen221.mp2.graph.Vertex;
+import cpen221.mp2.spaceship.MillenniumFalcon;
+import cpen221.mp2.views.BenchmarkView;
+import cpen221.mp2.views.CLIView;
+import cpen221.mp2.views.View;
 import org.junit.Test;
 
 import java.util.*;
@@ -655,6 +660,24 @@ public class GraphTest {
         }
         catch(Exception e){
             assertEquals(1,1);
+        }
+    }
+
+    @Test
+    public void testKamino(){
+        int count = 0;
+        while(count < 1) {
+            count++;
+            try {
+                Random RNG = new Random();
+                long seed = RNG.nextLong();
+                View view = new BenchmarkView();
+                Kamino k = new Kamino(seed, new MillenniumFalcon(), view);
+            }
+            catch(Exception e){
+                System.out.println("Error!");
+                fail();
+            }
         }
     }
 
