@@ -94,7 +94,10 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
         }
         if (vertex(e.v1())) {
             if (vertex(e.v2())) {
-                return edges.add(e);
+                if(!this.edge(e)) {
+                    edges.add(e);
+                    return true;
+                }
             }
         }
         return false;
@@ -261,23 +264,26 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
             return new ArrayList<>();
         }
 
-        Map<V, V> sourcePaths = doDijkstra(source);
-        List<V> reversePath = new ArrayList<>();
-        List<V> path = new ArrayList<>();
-        reversePath.add(sink);
-        V curV = sink;
-        if (!sourcePaths.containsValue(source) || !sourcePaths.containsKey(sink)) {
-            throw new IllegalArgumentException();
+        try {
+            Map<V, V> sourcePaths = doDijkstra(source);
+            List<V> reversePath = new ArrayList<>();
+            List<V> path = new ArrayList<>();
+            reversePath.add(sink);
+            V curV = sink;
+            if (!sourcePaths.containsValue(source) || !sourcePaths.containsKey(sink)) {
+                return new ArrayList<>();
+            }
+            while (curV != source) {
+                reversePath.add(sourcePaths.get(curV));
+                curV = sourcePaths.get(curV);
+            }
+            for (int i = reversePath.size() - 1; i >= 0; i--) {
+                path.add(reversePath.get(i));
+            }
+            return path;
+        }catch (Exception e){
+            return new ArrayList<>();
         }
-        while (curV != source) {
-            reversePath.add(sourcePaths.get(curV));
-            curV = sourcePaths.get(curV);
-        }
-        for (int i = reversePath.size() - 1; i >= 0; i--) {
-            path.add(reversePath.get(i));
-        }
-
-        return path;
     }
 
     /**

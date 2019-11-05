@@ -102,6 +102,7 @@ public class MillenniumFalcon implements Spaceship {
                 if(maxSignal == 0){
                     deadEnds.add(state.currentID());
                     if(stats.isEmpty()){
+                        blackList.add(state.currentID());
                         hunt(state, blackList);
                         return;
                     }
