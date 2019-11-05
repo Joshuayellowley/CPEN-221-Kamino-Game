@@ -1,8 +1,13 @@
 package cpen221.mp2;
 
+import cpen221.mp2.controllers.Kamino;
 import cpen221.mp2.graph.Edge;
 import cpen221.mp2.graph.Graph;
 import cpen221.mp2.graph.Vertex;
+import cpen221.mp2.spaceship.MillenniumFalcon;
+import cpen221.mp2.views.BenchmarkView;
+import cpen221.mp2.views.CLIView;
+import cpen221.mp2.views.View;
 import org.junit.Test;
 
 import java.util.*;
@@ -150,8 +155,6 @@ public class GraphTest {
         Vertex v5 = new Vertex(5, "E");
         Vertex v6 = new Vertex(6, "F");
 
-
-
         Edge<Vertex> e1 = new Edge<>(v1, v3, 2);
         Edge<Vertex> e2 = new Edge<>(v1, v2, 3);
         Edge<Vertex> e3 = new Edge<>(v4, v5, 1);
@@ -179,6 +182,96 @@ public class GraphTest {
         g.addEdge(e8);
 
         g.minimumSpanningTree();
+    }
+
+    @Test
+    public void testTree3() {
+        Vertex v1 = new Vertex(1, "A");
+        Vertex v2 = new Vertex(2, "B");
+        Vertex v3 = new Vertex(3, "C");
+        Vertex v4 = new Vertex(4, "D");
+        Vertex v5 = new Vertex(5, "E");
+        Vertex v6 = new Vertex(6, "F");
+        Vertex v7 = new Vertex(7, "G");
+        Vertex v8 = new Vertex(8, "H");
+
+        Edge<Vertex> e1 = new Edge<>(v1, v7, 4);
+        Edge<Vertex> e2 = new Edge<>(v1, v2, 7);
+        Edge<Vertex> e3 = new Edge<>(v2, v4, 6);
+        Edge<Vertex> e4 = new Edge<>(v2, v3, 3);
+        Edge<Vertex> e5 = new Edge<>(v5, v3, 11);
+        Edge<Vertex> e6 = new Edge<>(v6, v7, 2);
+        Edge<Vertex> e7 = new Edge<>(v5, v8, 3);
+        Edge<Vertex> e8 = new Edge<>(v5, v2, 1);
+        Edge<Vertex> e9 = new Edge<>(v5, v6, 4);
+
+        Graph<Vertex, Edge<Vertex>> g = new Graph<>();
+        g.addVertex(v1);
+        g.addVertex(v2);
+        g.addVertex(v3);
+        g.addVertex(v4);
+        g.addVertex(v5);
+        g.addVertex(v6);
+
+        g.addEdge(e1);
+        g.addEdge(e2);
+        g.addEdge(e3);
+        g.addEdge(e4);
+        g.addEdge(e5);
+        g.addEdge(e6);
+        g.addEdge(e7);
+        g.addEdge(e8);
+        g.addEdge(e9);
+
+
+    }
+
+    @Test
+    public void testTreeNotConnected() {
+        Vertex v1 = new Vertex(1, "A");
+        Vertex v2 = new Vertex(2, "B");
+        Vertex v3 = new Vertex(3, "C");
+        Vertex v4 = new Vertex(4, "D");
+        Vertex v5 = new Vertex(5, "E");
+        Vertex v6 = new Vertex(6, "F");
+        Vertex v7 = new Vertex(7, "G");
+        Vertex v8 = new Vertex(8, "H");
+
+        Edge<Vertex> e1 = new Edge<>(v1, v7, 4);
+        Edge<Vertex> e2 = new Edge<>(v1, v2, 7);
+        Edge<Vertex> e3 = new Edge<>(v2, v4, 6);
+        Edge<Vertex> e4 = new Edge<>(v2, v3, 3);
+        Edge<Vertex> e5 = new Edge<>(v5, v3, 11);
+        Edge<Vertex> e6 = new Edge<>(v6, v7, 2);
+        Edge<Vertex> e8 = new Edge<>(v5, v2, 1);
+        Edge<Vertex> e9 = new Edge<>(v5, v6, 4);
+
+        Graph<Vertex, Edge<Vertex>> g = new Graph<>();
+        g.addVertex(v1);
+        g.addVertex(v2);
+        g.addVertex(v3);
+        g.addVertex(v4);
+        g.addVertex(v5);
+        g.addVertex(v6);
+        g.addVertex(v7);
+        g.addVertex(v8);
+
+        g.addEdge(e1);
+        g.addEdge(e2);
+        g.addEdge(e3);
+        g.addEdge(e4);
+        g.addEdge(e5);
+        g.addEdge(e6);
+        g.addEdge(e8);
+        g.addEdge(e9);
+
+        try {
+            g.minimumSpanningTree().toString();
+            fail();
+        }catch(Exception e){
+            assertEquals(1, 1);
+        }
+
     }
 
     @Test
@@ -367,7 +460,9 @@ public class GraphTest {
         invalidPath.add(v7);
         invalidPath.add(v4);
         Random rng = new Random();
-        assertEquals(0, g.pathLength(invalidPath));
+
+        assertEquals(Integer.MAX_VALUE,g.pathLength(invalidPath));
+
         g.pruneRandomEdges(rng);
     }
 
@@ -415,7 +510,13 @@ public class GraphTest {
         assertFalse(g.remove(v5));
         assertFalse(g.remove(v6));
         assertEquals(e2, g.getEdge(v2, v3));
-        assertEquals(21, g.pathLength(g.shortestPath(v3, v4)));
+
+        try{
+            g.pathLength(g.shortestPath(v3, v4));
+        }catch (Exception e){
+            assertEquals(1,1);
+        }
+
         assertTrue(g.remove(v1));
     }
 
@@ -539,16 +640,45 @@ public class GraphTest {
         e1.intersection(null);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testDisconnectedShortestPath(){
         Vertex v1 = new Vertex(1, "A");
         Vertex v2 = new Vertex(2, "B");
         Vertex v3 = new Vertex(3, "C");
+        Vertex v4 = new Vertex(4, "D");
+        Edge<Vertex> e1 = new Edge<>(v1,v2,1);
+        Edge<Vertex> e2 = new Edge<>(v3,v4,1);
         Graph<Vertex, Edge<Vertex>> g = new Graph<>();
         g.addVertex(v1);
         g.addVertex(v2);
         g.addVertex(v3);
-        g.shortestPath(v1, v3);
+        g.addEdge(e1);
+        g.addEdge(e2);
+        try{
+            g.shortestPath(v1, v3);
+            fail();
+        }
+        catch(Exception e){
+            assertEquals(1,1);
+        }
+    }
+
+    @Test
+    public void testKamino(){
+        int count = 0;
+        while(count < 1) {
+            count++;
+            try {
+                Random RNG = new Random();
+                long seed = RNG.nextLong();
+                View view = new BenchmarkView();
+                Kamino k = new Kamino(seed, new MillenniumFalcon(), view);
+            }
+            catch(Exception e){
+                System.out.println("Error!");
+                fail();
+            }
+        }
     }
 
 }
