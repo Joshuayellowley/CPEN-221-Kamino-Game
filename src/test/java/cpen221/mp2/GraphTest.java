@@ -539,4 +539,16 @@ public class GraphTest {
         e1.intersection(null);
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testDisconnectedShortestPath(){
+        Vertex v1 = new Vertex(1, "A");
+        Vertex v2 = new Vertex(2, "B");
+        Vertex v3 = new Vertex(3, "C");
+        Graph<Vertex, Edge<Vertex>> g = new Graph<>();
+        g.addVertex(v1);
+        g.addVertex(v2);
+        g.addVertex(v3);
+        g.shortestPath(v1, v3);
+    }
+
 }

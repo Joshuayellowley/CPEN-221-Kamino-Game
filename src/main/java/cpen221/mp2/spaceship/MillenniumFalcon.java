@@ -14,6 +14,8 @@ import java.util.*;
 
 /**
  * An instance implements the methods needed to complete the mission.
+ * Hunt finds Kamino using the least amount of fuel possible
+ * Gather collects as much spice as possible before returning to Earth
  */
 public class MillenniumFalcon implements Spaceship {
     long startTime = System.nanoTime(); // start time of rescue phase
@@ -47,15 +49,8 @@ public class MillenniumFalcon implements Spaceship {
         Planet kamino = state.currentPlanet();
         Planet earth = state.earth();
         Set<Planet> allPlanets = state.planets();
-        Object[] planetList = allPlanets.toArray();
 
         Set<Planet> visited = new HashSet<>();
-        List minTree = graph.minimumSpanningTree();
-        Set<Planet> canVisit = new HashSet<>();
-
-        boolean goingBack = false;
-        boolean onTheWay = false;
-
         Planet mostEfficient = earth;
         TreeMap<Double, Planet> scores = new TreeMap<>();
         allPlanets.remove(kamino);
@@ -65,13 +60,8 @@ public class MillenniumFalcon implements Spaceship {
             double score = 0;
             score += p.spice();
             totalSpice += score;
-//            score /= graph.pathLength(graph.shortestPath(p,kamino));
-/*
-            score /= graph.pathLength(graph.shortestPath(p,earth));
-*/
             scores.put(score,p);
         }
-        System.out.println(totalSpice);
 
         Map descendingScores = scores.descendingMap();
 
@@ -102,57 +92,5 @@ public class MillenniumFalcon implements Spaceship {
             visited.add(path.get(i));
         }
     }
-
-
-//    private class Neighbourhood extends Graph<Planet, Link> implements Comparable<Neighbourhood> {
-//        //RI: Planets are unique, and within diameter of head
-//        //AF: A set of planets in a graph that are within a diameter from a head planet
-//        private Planet head;
-//        private Set<Planet> neighborhood;
-//        private Set<Planet> visited;
-//        private Planet currPlanet;
-//        private GathererStage state;
-//        private int spice;
-//
-//        private Neighbourhood(Planet head, int diameter, GathererStage state){
-//            this.head = head;
-//            this.neighborhood = search(head,diameter);
-//            this.currPlanet = head;
-//            this.state = state;
-//            this.spice = getAllSpice();
-//            this.visited = new HashSet<>();
-//        }
-//
-//        private void traverseAllPlanets(){
-//            for(Planet p: neighborhood){
-//                List path = shortestPath(currPlanet, p);
-//                if(pathLength(path) + pathLength(shortestPath(p, state.earth())) >= state.fuelRemaining()){
-//                    moveOnPath(path,state,visited);
-//                    currPlanet = state.currentPlanet();
-//                }
-//                else{
-//                    moveOnPath(shortestPath(state.currentPlanet(), state.earth()), state, new HashSet<>());
-//                    return;
-//                }
-//
-//            }
-//        }
-//
-//        private int getAllSpice(){
-//            int spice = 0;
-//            for(Planet p: neighborhood){
-//                spice += p.spice();
-//            }
-//            return spice;
-//        }
-//
-//
-//
-//
-//        @Override
-//        public int compareTo(Neighbourhood neighbourhood) {
-//            return Integer.compare(this.spice, neighbourhood.spice);
-//        }
-//    }
 }
 

@@ -11,22 +11,16 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
 
     private HashSet<V> vertices = new HashSet<>();
     private HashSet<E> edges = new HashSet<>();
-
     // Representation Invariant:
     // each V in vertices is unique, and cannot be null.
-    // No vertex can exist without being connected to another, except the first
-    // Vertex added to the graph
-    // each E in Edges must connect two vertices, and cannot be null
+    // each E in edges is unique, and cannot be null. No edge can have the same
+    // 2 vertices as another. Each edge has length > 0
+    // each E in edges must connect two unique vertices, and cannot be null
 
     // Abstraction Function:
     // Represents a graph of a set V's which may/may not be connected by E's
 
     public Graph() {}
-
-    public Graph(Set<V> vertices, Set<E> edges) {
-        this.vertices = new HashSet<>(vertices);
-        this.edges = new HashSet<>(edges);
-    }
 
     /**
      * Add a vertex to the graph, if it does not already exist
@@ -77,7 +71,6 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
                 }
             }
         }
-        System.out.println("Edge already contained in the edges list or is not connected to an existing vertex");
         return false;
     }
 
@@ -163,7 +156,6 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
             this.vertices.remove(v);
             return true;
         } else {
-            System.out.println("Vertex is not contained in the vertex list");
             return false;
         }
     }
@@ -188,7 +180,7 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
         Set<E> newEdges = new HashSet<>();
         for (E e : this.edges) {
             if (e.incident(v)) {
-                newEdges.add((E) new Edge(e.v1(), e.v2(), e.length()));
+                newEdges.add(e);
             }
         }
         return newEdges;
@@ -232,11 +224,14 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
      * (both end points are part of the list). If they are not, returns an empty List.
      */
     @Override
-    public List<V> shortestPath(V source, V sink) {
+    public List<V> shortestPath(V source, V sink) throws IllegalArgumentException {
         if(!vertex(source) || !vertex(sink)){
             return new ArrayList<>();
         }
         Map<V,V> sourcePaths = doDijkstra(source);
+        if(!sourcePaths.containsKey(source)){
+            throw new IllegalArgumentException();
+        }
         List<V> reversePath = new ArrayList<>();
         List<V> path = new ArrayList<>();
         reversePath.add(sink);
@@ -319,11 +314,8 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
         }
 
         dist.put(source, 0);
-
-
         while(!allVs.isEmpty()){
             V curV = source;
-
             if(flag){
                 int min = Integer.MAX_VALUE;
                 for(Map.Entry<V,Integer> entry : dist.entrySet()){
@@ -347,11 +339,7 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
                     }
                 }
             }
-
-
         }
-
-
         return dist;
     }
 
@@ -402,17 +390,13 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
     public int pathLength(List<V> path) {
         int totalLength = 0;
         for(int i = 0; i < path.size() - 1; i++){
-
             E temp = getEdge(path.get(i),path.get(i+1));
-
             if(temp == null){
-                System.out.println("This is an invalid path");
                 return 0;
             }else{
                 totalLength += temp.length();
             }
         }
-
         return totalLength;
     }
 
@@ -437,7 +421,6 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
                 inRange.add(vertex);
             }
         }
-
         return inRange;
     }
 
@@ -453,9 +436,7 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
      */
     @Override
     public int diameter() {
-
         int max = 0;
-
         for(V v: vertices){
             for(V v1: vertices){
                 if(this.getAllShortestPaths(v).get(v1) > max){
@@ -463,8 +444,6 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
                 }
             }
         }
-
-
         return max;
     }
 
@@ -486,7 +465,6 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
                 return edge;
             }
         }
-
         return null;
     }
 
