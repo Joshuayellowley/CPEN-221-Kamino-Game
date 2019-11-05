@@ -26,7 +26,7 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
     }
 
     private boolean isConnected() {
-        int count = 0;
+        int count;
         for (V v : this.vertices) {
             count = 0;
             for (E e : this.edges) {
@@ -500,7 +500,6 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
     public int diameter() {
 
         int max = 0;
-
         for (V v : vertices) {
             for (V v1 : vertices) {
                 if (this.getAllShortestPaths(v).get(v1) > max) {

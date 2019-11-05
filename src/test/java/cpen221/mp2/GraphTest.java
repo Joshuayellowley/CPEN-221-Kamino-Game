@@ -22,6 +22,10 @@ public class GraphTest {
         Vertex v2 = new Vertex(2, "B");
         Vertex v3 = new Vertex(3, "C");
         Vertex v4 = new Vertex(4, "D");
+        Vertex v5 = new Vertex(4, "D");
+        Vertex v6 = null;
+        Vertex v7 = new Vertex(7, "G");
+
 
         Edge<Vertex> e1 = new Edge<>(v1, v2, 5);
         Edge<Vertex> e2 = new Edge<>(v2, v3, 7);
@@ -32,9 +36,21 @@ public class GraphTest {
         g.addVertex(v2);
         g.addVertex(v3);
         g.addVertex(v4);
+        assertFalse(g.addVertex(v5));
+        assertFalse(g.addVertex(v6));
+
         g.addEdge(e1);
         g.addEdge(e2);
         g.addEdge(e3);
+
+
+        assertTrue(g.vertex(v1));
+        assertTrue(g.vertex(v2));
+        assertTrue(g.vertex(v3));
+        assertTrue(g.vertex(v4));
+        assertTrue(g.vertex(v5));
+        assertFalse(g.vertex(v6));
+        assertFalse(g.vertex(v7));
 
         assertEquals(e2, g.getEdge(v2, v3));
         assertEquals(21, g.pathLength(g.shortestPath(v3, v4)));
@@ -46,6 +62,7 @@ public class GraphTest {
         Vertex v2 = new Vertex(2, "B");
         Vertex v3 = new Vertex(3, "C");
         Vertex v4 = new Vertex(4, "D");
+        Vertex v5 = new Vertex(5, "E");
         Graph<Vertex, Edge<Vertex>> g = new Graph<>();
 
         Edge<Vertex> e1 = new Edge<>(v1, v2, 5);
@@ -53,6 +70,8 @@ public class GraphTest {
         Edge<Vertex> e3 = new Edge<>(v1, v4, 9);
         Edge<Vertex> e4 = new Edge<>(v2, v4, 10);
         Edge<Vertex> e5 = new Edge<>(v3, v4, 11);
+        Edge<Vertex> e6 = new Edge<>(v2, v4, 10);
+        Edge<Vertex> e7 = new Edge<>(v2, v5, 2);
 
         Set<Edge<Vertex>> eset = new HashSet<>();
         Map<Vertex,Edge<Vertex>> neighborSet = new HashMap<>();
@@ -83,6 +102,9 @@ public class GraphTest {
         assertTrue(g.addEdge(e4));
         assertFalse(g.addEdge(e4));
 
+        assertFalse(g.addEdge(e6));
+        assertFalse(g.addEdge(e7));
+
         assertEquals(e1.length(),5);
         assertEquals(e2.length(),7);
         assertEquals(e3.length(),9);
@@ -112,8 +134,6 @@ public class GraphTest {
         Vertex v4 = new Vertex(4, "D");
         Vertex v5 = new Vertex(5, "E");
         Vertex v6 = new Vertex(6, "F");
-
-
 
         Edge<Vertex> e1 = new Edge<>(v1, v4, 2);
         Edge<Vertex> e2 = new Edge<>(v1, v6, 3);
@@ -421,7 +441,6 @@ public class GraphTest {
         List<Vertex> shortestPath = new ArrayList<>();
 
         shortestPath.add(v6);
-        //shortestPath.add(v6);
         shortestPath.add(v1);
         shortestPath.add(v5);
 
@@ -437,9 +456,13 @@ public class GraphTest {
 
 
         assertEquals(19,g.diameter(),0.0001);
-//        assertEquals(12, g.pathLength(path1), 0.00001);
-//        assertEquals(23, g.pathLength(path2), 0.00001);
-        assertEquals(shortestPath, g.shortestPath(v6, v5));
+        assertEquals(g.pathLength(path1), Integer.MAX_VALUE);
+        assertEquals(g.pathLength(path2), Integer.MAX_VALUE);
+        try {
+            assertEquals(shortestPath, g.shortestPath(v6, v5));
+        }catch (Exception e){
+            fail();
+        }
 
     }
 
@@ -455,6 +478,8 @@ public class GraphTest {
 
         List<Vertex> invalidPath = new ArrayList<>();
         Graph<Vertex,Edge<Vertex>> g = new Graph<>();
+        List<Vertex> shortestPath = new ArrayList<>();
+
         invalidPath.add(v1);
         invalidPath.add(v2);
         invalidPath.add(v7);
@@ -463,6 +488,8 @@ public class GraphTest {
 
         assertEquals(Integer.MAX_VALUE,g.pathLength(invalidPath));
 
+
+        assertEquals(g.shortestPath(v1, v4), new ArrayList<>());
         g.pruneRandomEdges(rng);
     }
 
@@ -504,7 +531,6 @@ public class GraphTest {
 
         allEdges.add(e4);
         assertNotEquals(allEdges, g.allEdges());
-
 
         assertFalse(g.remove(e4));
         assertFalse(g.remove(v5));
@@ -654,13 +680,9 @@ public class GraphTest {
         g.addVertex(v3);
         g.addEdge(e1);
         g.addEdge(e2);
-        try{
-            g.shortestPath(v1, v3);
-            fail();
-        }
-        catch(Exception e){
-            assertEquals(1,1);
-        }
+
+        assertEquals(g.shortestPath(v1, v3), new ArrayList<>());
+
     }
 
     @Test
@@ -692,6 +714,7 @@ public class GraphTest {
             try {
                 Random RNG = new Random();
                 long seed = RNG.nextLong();
+                System.out.println(seed);
                 View view = new BenchmarkView();
                 Kamino k = new Kamino(seed, new MillenniumFalcon(), view);
             }
