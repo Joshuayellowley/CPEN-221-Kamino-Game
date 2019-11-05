@@ -21,12 +21,6 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
     // Abstraction Function:
     // Represents a graph of a set V's which may/may not be connected by E's
 
-    private void checkRep() {
-        if (vertices.size() > 1) {
-
-        }
-    }
-
 
     public Graph() {
     }
@@ -98,10 +92,9 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
         if (e == null) {
             return false;
         }
-        if (vertices.contains(e.v1())) {
-            if (vertices.contains(e.v2())) {
-                edges.add(e);
-                return true;
+        if (vertex(e.v1())) {
+            if (vertex(e.v2())) {
+                return edges.add(e);
             }
         }
         return false;
@@ -226,7 +219,6 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
 
     /**
      * Obtain a set of all edges in the graph.
-     * Access to this set **should not** permit graph mutations.
      *
      * @return all edges in the graph
      */
@@ -432,14 +424,6 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
 
             path.add(chosenEdge);
             visited.add(chosenVert);
-        }
-
-        System.out.println(path.size());
-
-        for (E poop : path) {
-            System.out.println("------");
-            System.out.println(poop.v1().id());
-            System.out.println(poop.v2().id());
         }
 
         return path;

@@ -525,19 +525,19 @@ public class GraphTest {
         Graph<Vertex, Edge<Vertex>> g = new Graph<>();
         Vertex v5 = new Vertex(5, "E");
         Vertex v6 = new Vertex(6, "F");
-        Edge e1 =  new Edge(v5,v6);
+        Edge<Vertex> e1 =  new Edge<Vertex>(v5,v6);
         assertEquals(new ArrayList<>(), g.shortestPath(v5, v6));
         assertEquals(new HashMap<Vertex,Edge>(), g.getNeighbours(v5));
         assertEquals(new HashSet<Vertex>(), g.allVertices());
         assertEquals(new HashSet<Edge>(), g.allEdges());
         assertEquals(0,g.edgeLengthSum());
         assertEquals(0,g.edgeLength(v5, v6));
-        assertEquals(null,g.getEdge(v5, v6));
+        assertNull(g.getEdge(v5, v6));
         assertFalse(g.addEdge(null));
         assertFalse(g.addVertex(null));
         g.addVertex(v5);
         g.addVertex(v6);
-        assertEquals(null, g.getEdge(v5,v6));
+        assertNull(g.getEdge(v5, v6));
     }
 
     @Test
@@ -664,13 +664,52 @@ public class GraphTest {
     }
 
     @Test
+    public void testDisconnectedShortestPath2(){
+        Vertex v1 = new Vertex(1, "A");
+        Vertex v2 = new Vertex(2, "B");
+        Vertex v3 = new Vertex(3, "C");
+        Vertex v4 = new Vertex(4, "D");
+        Edge<Vertex> e1 = new Edge<>(v1,v2,1);
+        Edge<Vertex> e2 = new Edge<>(v3,v4,1);
+        Graph<Vertex, Edge<Vertex>> g = new Graph<>();
+        g.addVertex(v1);
+        g.addVertex(v2);
+        g.addVertex(v3);
+        try{
+            g.shortestPath(v1, v3);
+            fail();
+        }
+        catch(Exception e){
+            assertEquals(1,1);
+        }
+    }
+
+    @Test
     public void testKamino(){
+        int count = 0;
+        while(count < 5) {
+            count++;
+            try {
+                Random RNG = new Random();
+                long seed = RNG.nextLong();
+                View view = new BenchmarkView();
+                Kamino k = new Kamino(seed, new MillenniumFalcon(), view);
+            }
+            catch(Exception e){
+                System.out.println("Error!");
+                fail();
+            }
+        }
+    }
+
+    @Test
+    public void testDeadends(){
         int count = 0;
         while(count < 1) {
             count++;
             try {
                 Random RNG = new Random();
-                long seed = RNG.nextLong();
+                long seed = -3296189656239142911L;
                 View view = new BenchmarkView();
                 Kamino k = new Kamino(seed, new MillenniumFalcon(), view);
             }
