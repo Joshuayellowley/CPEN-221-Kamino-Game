@@ -54,7 +54,7 @@ public class MillenniumFalcon implements Spaceship {
                     deadEnds.add(state.currentID());
                     blackList.add(state.currentID());
                     if(stats.isEmpty()){
-                        hunt(state, blackList);
+                        huntAgain(state, blackList);
                         return;
                     }
                     else {
@@ -68,7 +68,7 @@ public class MillenniumFalcon implements Spaceship {
         }
     }
 
-    public void hunt(HunterStage state, Set<Integer> blackList){
+    public void huntAgain(HunterStage state, Set<Integer> blackList){
 
         PlanetStatus[] nStats;
 
@@ -101,8 +101,9 @@ public class MillenniumFalcon implements Spaceship {
                 }
                 if(maxSignal == 0){
                     deadEnds.add(state.currentID());
+                    blackList.add(state.currentID());
                     if(stats.isEmpty()){
-                        hunt(state, blackList);
+                        huntAgain(state, blackList);
                         return;
                     }
                     else {
