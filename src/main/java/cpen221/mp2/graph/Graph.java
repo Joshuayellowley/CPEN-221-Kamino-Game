@@ -105,11 +105,11 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
         if (e == null) {
             return false;
         }
-        if (!this.edge(e)) {
-            addVertex(e.v1());
-            addVertex(e.v2());
-            edges.add(e);
-            return true;
+        if(vertices.contains(e.v1())){
+            if(vertices.contains(e.v2())){
+                edges.add(e);
+                return true;
+            }
         }
         return false;
     }
@@ -221,7 +221,7 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
         Set<E> newEdges = new HashSet<>();
         for (E e : this.edges) {
             if (e.incident(v)) {
-                newEdges.add((E) new Edge(e.v1(), e.v2(), e.length()));
+                  newEdges.add(e);
             }
         }
         return newEdges;
