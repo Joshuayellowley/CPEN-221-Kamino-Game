@@ -726,6 +726,26 @@ public class GraphTest {
     }
 
     @Test
+    public void testManyHunts(){
+        int count = 0;
+        while(count < 50) {
+            count++;
+            try {
+                Random RNG = new Random();
+                long seed = RNG.nextLong();
+                System.out.println(seed);
+                View view = new BenchmarkView();
+                Kamino k = new Kamino(seed, new MillenniumFalcon(), view);
+                if(k.huntSucceeded()) continue;
+            }
+            catch(Exception e){
+                System.out.println("Error!");
+                fail();
+            }
+        }
+    }
+
+    @Test
     public void testDeadends(){
         int count = 0;
         while(count < 1) {
