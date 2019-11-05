@@ -54,6 +54,7 @@ public class MillenniumFalcon implements Spaceship {
 
         boolean goingBack = false;
         boolean onTheWay = false;
+        int totalSpice = 0;
 
         Planet mostEfficient = earth;
         TreeMap<Double, Planet> scores = new TreeMap<>();
@@ -62,6 +63,7 @@ public class MillenniumFalcon implements Spaceship {
         for(Planet p : allPlanets){
             double score = 0;
             score += p.spice();
+            totalSpice += p.spice();
 //            score /= graph.pathLength(graph.shortestPath(p,kamino));
 /*
             score /= graph.pathLength(graph.shortestPath(p,earth));
@@ -70,19 +72,20 @@ public class MillenniumFalcon implements Spaceship {
         }
 
         Map descendingScores = scores.descendingMap();
-
+        System.out.println(totalSpice);
         ArrayList<Planet> bestPlanets = new ArrayList<>(descendingScores.values());
 
         while(state.fuelRemaining() > 0){
+            visited.add(state.currentPlanet());
             for(Planet p: bestPlanets){
-                if(p.equals(state.currentPlanet()))
+                if(p.equals(state.currentPlanet())|| visited.contains(p))
                     continue;
                 double distToEarth = graph.pathLength(graph.shortestPath(p,earth));
                 double distFromHere = graph.pathLength(graph.shortestPath(state.currentPlanet(),p));
                 if(distToEarth + distFromHere <= state.fuelRemaining()){
-                    moveOnPath(graph.shortestPath(state.currentPlanet(), p), state);
+                    moveOnPath(graph.shortestPath(state.currentPlanet(), p), state, visited);
                 }else{
-                    moveOnPath(graph.shortestPath(state.currentPlanet(), state.earth()), state);
+                    moveOnPath(graph.shortestPath(state.currentPlanet(), state.earth()), state, visited);
                     return;
                 }
             }
@@ -93,9 +96,10 @@ public class MillenniumFalcon implements Spaceship {
 
     }
 
-    private void moveOnPath(List<Planet> path, GathererStage state){
+    private void moveOnPath(List<Planet> path, GathererStage state, Set<Planet> visited){
         for(int i = 1; i < path.size(); i++){
             state.moveTo(path.get(i));
+            visited.add(path.get(i));
         }
     }
 }

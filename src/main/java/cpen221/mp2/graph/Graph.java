@@ -21,8 +21,50 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
     // Abstraction Function:
     // Represents a graph of a set V's which may/may not be connected by E's
 
+    private void checkRep(){
+
+        if(vertices.size() > 1){
+
+        }
+
+
+    }
+
+
     public Graph() {
     }
+
+    private  boolean isConnected(){
+        int count = 0;
+        for(V v: this.vertices){
+            count = 0;
+            for(E e: this.edges){
+                if(e.incident(v)){
+                    count++;
+                }
+            }
+            if(count == 0){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean isConnected(V v){
+
+        int count = 0;
+
+            for(E e: this.edges){
+                if(e.incident(v)){
+                    count++;
+                }
+            }
+
+        return count != 0;
+    }
+
+
+
 
     /**
      * Add a vertex to the graph, if it does not already exist
@@ -54,7 +96,7 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
 
     /**
      * Adds an edge of the graph if e is incident with any V in vertices
-     *
+     * Also adds any vertex of this edge to the graph if it does not already exist
      * @param e the edge to add to the graph
      * @return true iff e is an edge and is not already in the graph
      * and it connects to another vertex, and false otherwise
@@ -64,16 +106,11 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
             return false;
         }
         if (!this.edge(e)) {
-            for(V v : this.vertices){
-                if(e.incident(v)){
-                    addVertex(e.v1());
-                    addVertex(e.v2());
-                    edges.add(e);
-                    return true;
-                }
-            }
+            addVertex(e.v1());
+            addVertex(e.v2());
+            edges.add(e);
+            return true;
         }
-        System.out.println("Edge already contained in the edges list or is not connected to an existing vertex");
         return false;
     }
 
@@ -201,7 +238,8 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
     }
 
     /**
-     * Obtain all the neighbours of vertex v.
+     * Obtain all the neighbours of vertex v.  These are vertices in the graph that are one edge away
+     * from the argument v.
      *
      * @param v is the vertex whose neighbourhood we want.
      * @return a map containing each vertex w that neighbors v and the edge between v and w.
@@ -229,14 +267,19 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
      */
     @Override
     public List<V> shortestPath(V source, V sink) {
+
         if(!vertex(source) || !vertex(sink)){
             return new ArrayList<>();
         }
+
         Map<V,V> sourcePaths = doDijkstra(source);
         List<V> reversePath = new ArrayList<>();
         List<V> path = new ArrayList<>();
         reversePath.add(sink);
         V curV = sink;
+        if(!sourcePaths.containsValue(source) || !sourcePaths.containsKey(sink)){
+            throw new IllegalArgumentException();
+        }
         while(curV != source){
             reversePath.add(sourcePaths.get(curV));
             curV = sourcePaths.get(curV);
@@ -244,6 +287,7 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
         for(int i = reversePath.size()-1; i >= 0; i--){
             path.add(reversePath.get(i));
         }
+
         return path;
     }
 
@@ -261,13 +305,19 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
         boolean flag = false;
 
         for(V v : vertices){
-            dist.put(v, Integer.MAX_VALUE);
-            allVs.add(v);
+            if(isConnected(v)) {
+                dist.put(v, Integer.MAX_VALUE);
+                allVs.add(v);
+            }
         }
 
         dist.put(source, 0);
-
+        int count = 0;
         while(!allVs.isEmpty()){
+            count++;
+            if(count > this.vertices.size()){
+                throw new IllegalArgumentException();
+            }
             V curV = source;
             if(flag){
                 int min = Integer.MAX_VALUE;
@@ -308,14 +358,13 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
         boolean flag = false;
 
         for(V v : vertices){
-
-            dist.put(v, Integer.MAX_VALUE);
-            allVs.add(v);
-
+            if(this.isConnected(v)) {
+                dist.put(v, Integer.MAX_VALUE);
+                allVs.add(v);
+            }
         }
 
         dist.put(source, 0);
-
 
         while(!allVs.isEmpty()){
             V curV = source;
@@ -343,10 +392,7 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
                     }
                 }
             }
-
-
         }
-
 
         return dist;
     }
@@ -355,16 +401,22 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
      * Compute the minimum spanning tree of the graph.
      *
      *
-     * @return a list of edges that forms a minimum spanning tree of the graph
+     * @return a list of edges that forms a minimum spanning tree of the graph.
+     *         If there are disconnected vertices in the graph, throw an IllegalArgumentException.
      */
     @Override
-    public List<E> minimumSpanningTree() {
+    public List<E> minimumSpanningTree(){
 
         ArrayList<V> allVertices = new ArrayList<>(this.vertices);
         ArrayList<V> visited = new ArrayList<>();
         ArrayList<E> path = new ArrayList<>();
 
         visited.add(allVertices.get(0));
+
+        if(!this.isConnected()){
+            throw new IllegalArgumentException();
+        }
+
         while(!visited.containsAll(allVertices)) {
             int minLen = Integer.MAX_VALUE;
                 E chosenEdge = (E) this.edges.toArray()[0];
@@ -384,6 +436,15 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
             path.add(chosenEdge);
             visited.add(chosenVert);
         }
+
+        System.out.println(path.size());
+
+        for(E poop : path) {
+            System.out.println("------");
+            System.out.println(poop.v1().id());
+            System.out.println(poop.v2().id());
+        }
+
         return path;
     }
 
@@ -392,18 +453,20 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
      * Compute the length of a given path
      *
      * @param path indicates the vertices on the given path
-     * @return the length of path, if all vertices in path exist in graph, otherwise returns 0
+     * @return the length of path, if all vertices in path exist in graph and are connected in the given order.
+     *         If given path does not contain connected vertices or there are vertices not within the graph,
+     *         return Integer.MAX_VALUE.
+     *
      */
     @Override
-    public int pathLength(List<V> path) {
+    public int pathLength(List<V> path){
         int totalLength = 0;
         for(int i = 0; i < path.size() - 1; i++){
 
             E temp = getEdge(path.get(i),path.get(i+1));
 
             if(temp == null){
-                System.out.println("This is an invalid path");
-                return 0;
+                return Integer.MAX_VALUE;
             }else{
                 totalLength += temp.length();
             }
