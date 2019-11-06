@@ -697,70 +697,9 @@ public class GraphTest {
         g.addVertex(v1);
         g.addVertex(v2);
         g.addVertex(v3);
-        try{
-            g.shortestPath(v1, v3);
-            fail();
-        }
-        catch(Exception e){
-            assertEquals(1,1);
-        }
-    }
 
-    @Test
-    public void testKamino(){
-        int count = 0;
-        while(count < 5) {
-            count++;
-            try {
-                Random RNG = new Random();
-                long seed = RNG.nextLong();
-                System.out.println(seed);
-                View view = new BenchmarkView();
-                Kamino k = new Kamino(seed, new MillenniumFalcon(), view);
-            }
-            catch(Exception e){
-                System.out.println("Error!");
-                fail();
-            }
-        }
-    }
+        assertEquals(g.shortestPath(v1, v3), new ArrayList<>());
 
-    @Test
-    public void testManyHunts(){
-        int count = 0;
-        while(count < 50) {
-            count++;
-            try {
-                Random RNG = new Random();
-                long seed = RNG.nextLong();
-                System.out.println(seed);
-                View view = new BenchmarkView();
-                Kamino k = new Kamino(seed, new MillenniumFalcon(), view);
-                if(k.huntSucceeded()) continue;
-            }
-            catch(Exception e){
-                System.out.println("Error!");
-                fail();
-            }
-        }
-    }
-
-    @Test
-    public void testDeadends(){
-        int count = 0;
-        while(count < 1) {
-            count++;
-            try {
-                Random RNG = new Random();
-                long seed = -3296189656239142911L;
-                View view = new BenchmarkView();
-                Kamino k = new Kamino(seed, new MillenniumFalcon(), view);
-            }
-            catch(Exception e){
-                System.out.println("Error!");
-                fail();
-            }
-        }
     }
 
 }
