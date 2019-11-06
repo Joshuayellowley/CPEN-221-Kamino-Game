@@ -101,8 +101,7 @@ public class Edge<V extends Vertex> {
         V sv;
         try {
             sv = this.intersection(e);
-        }
-        catch (NoSuchElementException nse) {
+        } catch (NoSuchElementException nse) {
             // when there is no common vertex,
             // return any vertex (deterministic choice of v1 is okay).
             return v1;

@@ -58,5 +58,4 @@ public class Vertex {
     //// --- any new methods, if necessary, go below this link --- ////
 
 
-
 }

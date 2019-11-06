@@ -1,6 +1,15 @@
 package cpen221.mp2.graph;
 
-import java.util.*;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.Set;
+import java.util.Map;
+import java.util.List;
+import java.util.Deque;
+import java.util.LinkedList;
+import java.util.Random;
 
 /**
  * Represents a graph with vertices of type V.
@@ -26,16 +35,13 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
     }
 
     private boolean isConnected() {
-        int count;
         for (V v : this.vertices) {
-            count = 0;
-            for (E e : this.edges) {
-                if (e.incident(v)) {
-                    count++;
+            for (V v1 : this.vertices) {
+                if(!v1.equals(v)){
+                    if(shortestPath(v,v1).equals(new ArrayList<>())){
+                        return false;
+                    }
                 }
-            }
-            if (count == 0) {
-                return false;
             }
         }
         return true;
@@ -94,7 +100,7 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
         }
         if (vertex(e.v1())) {
             if (vertex(e.v2())) {
-                if(!this.edge(e)) {
+                if (!this.edge(e)) {
                     edges.add(e);
                     return true;
                 }
@@ -164,7 +170,7 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
      * @return true if e existed in the graph and was removed and false otherwise
      */
     public boolean remove(E e) {
-        if(edges.contains(e)){
+        if (edges.contains(e)) {
             edges.remove(e);
             return true;
         }
@@ -189,7 +195,6 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
             this.vertices.remove(v);
             return true;
         } else {
-            System.out.println("Vertex is not contained in the vertex list");
             return false;
         }
     }
@@ -230,7 +235,8 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
     }
 
     /**
-     * Obtain all the neighbours of vertex v.  These are vertices in the graph that are one edge away
+     * Obtain all the neighbours of vertex v.
+     * These are vertices in the graph that are one edge away
      * from the argument v.
      *
      * @param v is the vertex whose neighbourhood we want.
@@ -265,7 +271,7 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
         }
 
         try {
-            Map<V, V> sourcePaths = doDijkstra(source);
+            Map<V, V> sourcePaths = this.doDijkstra(source);
             List<V> reversePath = new ArrayList<>();
             List<V> path = new ArrayList<>();
             reversePath.add(sink);
@@ -281,7 +287,7 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
                 path.add(reversePath.get(i));
             }
             return path;
-        }catch (Exception e){
+        } catch (Exception e) {
             return new ArrayList<>();
         }
     }
@@ -294,7 +300,7 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
      * Optimal meaning it has the least total distance from source, on the way to sink.
      */
 
-    private Map<V, V> doDijkstra(V source) {
+    public Map<V, V> doDijkstra(V source) {
         Map<V, Integer> dist = new HashMap<>();
         Map<V, V> prev = new HashMap<>();
         Set<V> allVs = new HashSet<>();
@@ -345,13 +351,18 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
      * Compute the shortest path lengths from source to all other vertices
      *
      * @param source the start vertex
-     * @return a map of all the vertices in the graph, mapped with the shortest distance from the source.
+     * @return a map of all the vertices in the graph,
+     *          mapped with the shortest distance from the source.
      */
     private Map<V, Integer> getAllShortestPaths(V source) {
         Map<V, Integer> dist = new HashMap<>();
         Map<V, V> prev = new HashMap<>();
         Set<V> allVs = new HashSet<>();
         boolean flag = false;
+
+        if(!this.isConnected(source)){
+            return new HashMap<V, Integer>();
+        }
 
         for (V v : vertices) {
             if (this.isConnected(v)) {
@@ -440,9 +451,11 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
      * Compute the length of a given path
      *
      * @param path indicates the vertices on the given path
-     * @return the length of path, if all vertices in path exist in graph and are connected in the given order.
-     * If given path does not contain connected vertices or there are vertices not within the graph,
-     * return Integer.MAX_VALUE.
+     * @return the length of path, if all vertices in path exist
+     *            in graph and are connected in the given order.
+     *            If given path does not contain connected vertices
+     *            or there are vertices not within the graph,
+     *            return Integer.MAX_VALUE.
      */
     @Override
     public int pathLength(List<V> path) {
@@ -475,9 +488,17 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
             return new HashSet<>();
         }
         Map<V, Integer> vertexDistance = this.getAllShortestPaths(v);
+
+        if(vertexDistance.size() == 0){
+            return new HashSet<V>();
+        }
+
         Set<V> inRange = new HashSet<>();
 
         for (V vertex : vertices) {
+            if(!vertexDistance.containsKey(vertex)){
+                continue;
+            }
             if (vertexDistance.get(vertex) <= range && !v.equals(vertex)) {
                 inRange.add(vertex);
             }
@@ -498,17 +519,48 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
      */
     @Override
     public int diameter() {
-
         int max = 0;
-        for (V v : vertices) {
-            for (V v1 : vertices) {
-                if (this.getAllShortestPaths(v).get(v1) > max) {
-                    max = this.getAllShortestPaths(v).get(v1);
+        if(this.isConnected()) {
+            for (V v : vertices) {
+                for (V v1 : vertices) {
+                    if (v1.equals(v)) {
+                        continue;
+                    }
+                    if (max < this.pathLength(this.shortestPath(v, v1)) && this.pathLength(this.shortestPath(v, v1)) != Integer.MAX_VALUE) {
+                        max = this.pathLength(this.shortestPath(v, v1));
+                    }
                 }
             }
         }
+        else{
+            return this.disconnectedDiameter();
+        }
 
+        return max;
+    }
 
+    private int disconnectedDiameter(){
+        int max = 0;
+        for(V v: this.vertices){
+            Set<V> allConnectedVertices = new HashSet<>();
+            Set<E> allConnectedEdges = new HashSet<>();
+            for(V v1: this.vertices){
+                Map VandE = this.getNeighbours(v1);
+                allConnectedVertices.addAll(VandE.keySet());
+                allConnectedEdges.addAll(VandE.values());
+            }
+            Graph temp = new Graph();
+            for(V v2: allConnectedVertices){
+                temp.addVertex(v2);
+            }
+            for(E e: allConnectedEdges){
+                temp.addEdge(e);
+            }
+            int tempDiam = temp.diameter();
+            if(tempDiam > max){
+                max = tempDiam;
+            }
+        }
         return max;
     }
 

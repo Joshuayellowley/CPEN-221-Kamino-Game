@@ -18,136 +18,136 @@ public class MillenniumFalcon implements Spaceship {
     long startTime = System.nanoTime(); // start time of rescue phase
 
     @Override
-    public void hunt(HunterStage state){
+    public void hunt(HunterStage state) {
 
         PlanetStatus[] nStats;
 
-        double maxSignal = 0;
-        int maxId = 0;
+        double maxSignal;
+        int maxId;
         int count = 0;
         Set<Integer> deadEnds = new HashSet<>();
         Set<Integer> visited = new HashSet<>();
         Set<Integer> blackList = new HashSet<>();
-        Set<Integer> allVisited = new HashSet<>();
 
-        while(!state.onKamino()) {
+        while (!state.onKamino()) {
             visited.add(state.currentID());
             nStats = state.neighbors();
             ArrayList<PlanetStatus> stats = new ArrayList<>();
-            for(PlanetStatus ps: nStats){
-                if(!deadEnds.contains(ps.id())){
+            for (PlanetStatus ps : nStats) {
+                if (!deadEnds.contains(ps.id())) {
                     stats.add(ps);
                 }
             }
-            if(stats.size() == 1){
+            if (stats.size() == 1) {
                 deadEnds.add(state.currentID());
                 state.moveTo(stats.get(0).id());
-            }
-            else {
+            } else {
                 maxId = 0;
                 maxSignal = 0;
                 for (PlanetStatus s : nStats) {
-                    if (s.signal() >= maxSignal && !deadEnds.contains(s.id()) && !visited.contains(s.id()) && !blackList.contains(s.id())) {
+                    if (s.signal() >= maxSignal
+                            && !deadEnds.contains(s.id())
+                            && !visited.contains(s.id())
+                            && !blackList.contains(s.id())) {
                         maxId = s.id();
                         maxSignal = s.signal();
                     }
                 }
-                if(maxSignal == 0){
+                if (maxSignal == 0) {
                     deadEnds.add(state.currentID());
                     blackList.add(state.currentID());
-                    if(stats.isEmpty()){
+                    if (stats.isEmpty()) {
                         count++;
-                        allVisited.addAll(visited);
+                        Set<Integer> allVisited = new HashSet<>(visited);
                         hunt(state, blackList, count, allVisited);
                         return;
-                    }
-                    else {
+                    } else {
                         state.moveTo(stats.get(0).id());
                     }
-                }
-                else{
+                } else {
                     state.moveTo(maxId);
                 }
             }
         }
     }
 
-    public void hunt(HunterStage state, Set<Integer> blackList, int count, Set<Integer> allVisited){
+    public void hunt(HunterStage state, Set<Integer> blackList, int count,
+                     Set<Integer> allVisited) {
 
         PlanetStatus[] nStats;
 
-        double maxSignal = 0;
-        int maxId = 0;
+        double maxSignal;
+        int maxId;
         Set<Integer> deadEnds = new HashSet<>();
         Set<Integer> visited = new HashSet<>();
 
 
-//        if(count > 5){
-//            DFS(state, new HashSet<>(), state.currentID());
-//            return;
-//        }
+        if (count > 5) {
+            dFS(state, new HashSet<>(), state.currentID());
+            return;
+        }
 
 
-        while(!state.onKamino()) {
+        while (!state.onKamino()) {
             visited.add(state.currentID());
             nStats = state.neighbors();
             ArrayList<PlanetStatus> stats = new ArrayList<>();
-            for(PlanetStatus ps: nStats){
-                if(!deadEnds.contains(ps.id())){
+            for (PlanetStatus ps : nStats) {
+                if (!deadEnds.contains(ps.id())) {
                     stats.add(ps);
                 }
             }
-            if(stats.size() == 1){
+            if (stats.size() == 1) {
                 deadEnds.add(state.currentID());
                 state.moveTo(stats.get(0).id());
-            }
-            else {
+            } else {
                 maxId = 0;
                 maxSignal = 0;
                 for (PlanetStatus s : nStats) {
-                    if (s.signal() >= maxSignal && !deadEnds.contains(s.id()) && !visited.contains(s.id()) && !blackList.contains(s.id())) {
+                    if (s.signal() >= maxSignal
+                            && !deadEnds.contains(s.id())
+                            && !visited.contains(s.id())
+                            && !blackList.contains(s.id())) {
                         maxId = s.id();
                         maxSignal = s.signal();
                     }
                 }
-                if(maxSignal == 0){
+                if (maxSignal == 0) {
                     deadEnds.add(state.currentID());
-                    if(stats.isEmpty()){
+                    if (stats.isEmpty()) {
                         blackList.add(state.currentID());
                         count++;
                         allVisited.addAll(visited);
                         hunt(state, blackList, count, allVisited);
                         return;
-                    }
-                    else {
+                    } else {
                         state.moveTo(stats.get(0).id());
                     }
-                }
-                else{
+                } else {
                     state.moveTo(maxId);
                 }
             }
         }
     }
 
-    private void DFS(HunterStage state, Set<Integer> discovered, int previous){
+    private void dFS(HunterStage state, Set<Integer> discovered, int previous) {
         int here = state.currentID();
-        if(state.onKamino()){
+        if (state.onKamino()) {
             return;
         } else {
             discovered.add(state.currentID());
             PlanetStatus[] adj = state.neighbors();
-            for(PlanetStatus ps : adj){
-                if(!discovered.contains(ps.id())){
-                    if(state.onKamino()){
+            for (PlanetStatus ps : adj) {
+                if (!discovered.contains(ps.id())) {
+                    if (state.onKamino()) {
                         return;
                     }
                     state.moveTo(ps.id());
-                    DFS(state, discovered, here);
+                    dFS(state, discovered, here);
                 }
             }
 
-            if(state.currentID() == here){
+            if (state.currentID() == here) {
                 state.moveTo(previous);
             }
 
@@ -167,30 +167,31 @@ public class MillenniumFalcon implements Spaceship {
         allPlanets.remove(kamino);
         allPlanets.remove(earth);
 
-        for(Planet p : allPlanets){
+        for (Planet p : allPlanets) {
             double score = 0;
             score += p.spice();
-            scores.put(score,p);
+            scores.put(score, p);
         }
 
-        scores.put(0.0,earth);
+        scores.put(0.0, earth);
         Map descendingScores = scores.descendingMap();
         ArrayList<Planet> bestPlanets = new ArrayList<>(descendingScores.values());
 
-        while(state.fuelRemaining() > 0){
+        while (state.fuelRemaining() > 0) {
             visited.add(state.currentPlanet());
-            for(Planet p: bestPlanets){
-                if(p.equals(state.currentPlanet()) || visited.contains(p))
+            for (Planet p : bestPlanets) {
+                if (p.equals(state.currentPlanet()) || visited.contains(p)) {
                     continue;
-                double distToEarth = graph.pathLength(graph.shortestPath(p,earth));
-                double distFromHere = graph.pathLength(graph.shortestPath(state.currentPlanet(),p));
-                if(distToEarth + distFromHere <= state.fuelRemaining()){
+                }
+                double distToEarth = graph.pathLength(graph.shortestPath(p, earth));
+                double distFromHere = graph.pathLength(graph.shortestPath(state.currentPlanet(), p));
+                if (distToEarth + distFromHere <= state.fuelRemaining()) {
                     moveOnPath(graph.shortestPath(state.currentPlanet(), p), state, visited);
-                    if(p.equals(earth)){
+                    if (p.equals(earth)) {
                         return;
                     }
-                }else{
-                    if(state.currentPlanet().equals(kamino)){
+                } else {
+                    if (state.currentPlanet().equals(kamino)) {
                         continue;
                     }
                     moveOnPath(graph.shortestPath(state.currentPlanet(), state.earth()), state, visited);
@@ -201,8 +202,8 @@ public class MillenniumFalcon implements Spaceship {
         }
     }
 
-    private void moveOnPath(List<Planet> path, GathererStage state, Set<Planet> visited){
-        for(int i = 1; i < path.size(); i++){
+    private void moveOnPath(List<Planet> path, GathererStage state, Set<Planet> visited) {
+        for (int i = 1; i < path.size(); i++) {
             state.moveTo(path.get(i));
             visited.add(path.get(i));
         }

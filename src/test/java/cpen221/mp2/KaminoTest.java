@@ -37,7 +37,7 @@ public class KaminoTest {
     @Test
     public void testManyHunts(){
         int count = 0;
-        while(count < 5) {
+        while(count < 1) {
             count++;
             try {
                 Random RNG = new Random();
@@ -70,4 +70,59 @@ public class KaminoTest {
             }
         }
     }
+
+    @Test
+    public void testFailsafe(){
+        int count = 0;
+        while(count < 1) {
+            count++;
+            try {
+                Random RNG = new Random();
+                long seed = 6170258497722289779L;
+                View view = new BenchmarkView();
+                Kamino k = new Kamino(seed, new MillenniumFalcon(), view);
+            }
+            catch(Exception e){
+                System.out.println("Error!");
+                fail();
+            }
+        }
+    }
+
+    @Test
+    public void testGotAllSpice(){
+        int count = 0;
+        while(count < 1) {
+            count++;
+            try {
+                Random RNG = new Random();
+                long seed = -2138870951789271090L;
+                View view = new BenchmarkView();
+                Kamino k = new Kamino(seed, new MillenniumFalcon(), view);
+            }
+            catch(Exception e){
+                System.out.println("Error!");
+                fail();
+            }
+        }
+    }
+
+    @Test
+    public void testGotNoSpice(){
+        int count = 0;
+        while(count < 1) {
+            count++;
+            try {
+                Random RNG = new Random();
+                long seed = 7668854775586131845L;
+                View view = new BenchmarkView();
+                Kamino k = new Kamino(seed, new MillenniumFalcon(), view);
+            }
+            catch(Exception e){
+                System.out.println("Error!");
+                fail();
+            }
+        }
+    }
+
 }

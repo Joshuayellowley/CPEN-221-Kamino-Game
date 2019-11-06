@@ -115,6 +115,10 @@ public class GraphTest {
         assertTrue(g.edge(v2,v3));
         assertTrue(g.edge(v3,v2));
         assertFalse(g.edge(v3,v1));
+        assertFalse(g.edge(null));
+        assertFalse(g.edge(null, v1));
+        assertFalse(g.edge(null, null));
+
 
         assertEquals(9, g.edgeLength(v4,v1));
         assertEquals(9, g.edgeLength(v1,v4));
@@ -125,6 +129,38 @@ public class GraphTest {
         assertEquals(neighborSet, g.getNeighbours(v4));
         assertEquals(17, g.pathLength(g.shortestPath(v3, v4)));
     }
+
+    @Test
+    public void testAllVertices(){
+
+        Graph<Vertex,Edge<Vertex>> g = new Graph<>();
+        assertEquals(g.allVertices(), new HashSet<>());
+
+        Vertex v1 = new Vertex(1, "A");
+        Vertex v2 = new Vertex(2, "B");
+        Vertex v3 = new Vertex(3, "C");
+
+        g.addVertex(v1);
+
+        HashSet<Vertex> hasIt =  new HashSet<>();
+        hasIt.add(v1);
+
+        assertEquals(g.allVertices(),hasIt);
+
+        g.addVertex(v2);
+        g.addVertex(v3);
+
+
+        hasIt.add(v2);
+        hasIt.add(v3);
+
+        assertEquals(g.allVertices(),hasIt);
+
+
+    }
+
+
+
 
     @Test
     public void testTree() {
@@ -394,6 +430,7 @@ public class GraphTest {
 
 
         assertEquals(16,g.diameter(),0.0001);
+        assertEquals(0, new Graph<>().diameter());
         assertEquals(12, g.pathLength(path1), 0.00001);
         assertEquals(23, g.pathLength(path2), 0.00001);
         assertEquals(shortestPath, g.shortestPath(v1, v4));
@@ -517,6 +554,7 @@ public class GraphTest {
         allVertexes.add(v3);
         allVertexes.add(v4);
         assertEquals(allVertexes, g.allVertices());
+        assertEquals(g.allEdges(), new HashSet<>());
 
         g.addEdge(e1);
         g.addEdge(e2);
@@ -537,13 +575,17 @@ public class GraphTest {
         assertFalse(g.remove(v6));
         assertEquals(e2, g.getEdge(v2, v3));
 
+        g.remove(v1);
+        g.remove(v2);
+        g.remove(v3);
+        assertEquals(g.allEdges(), new HashSet<>());
+
         try{
             g.pathLength(g.shortestPath(v3, v4));
         }catch (Exception e){
             assertEquals(1,1);
         }
 
-        assertTrue(g.remove(v1));
     }
 
     @Test
@@ -583,9 +625,11 @@ public class GraphTest {
         g.addVertex(v2);
         g.addVertex(v3);
         g.addVertex(v4);
+        g.addVertex(v5);
         g.addEdge(e1);
         g.addEdge(e2);
         g.addEdge(e3);
+
 
         Set<Vertex> vertices1 = new HashSet<>();
         vertices1.add(v2);
@@ -601,6 +645,7 @@ public class GraphTest {
         assertEquals(vertices3,g.search(v1,12));
         assertEquals(new HashSet<Vertex>(),g.search(v5,12));
         assertEquals(new HashSet<Vertex>(),g.search(v5,3));
+        assertEquals(new HashSet<Vertex>(),g.search(null,3));
     }
 
 
@@ -697,6 +742,57 @@ public class GraphTest {
         g.addVertex(v1);
         g.addVertex(v2);
         g.addVertex(v3);
+
+        assertEquals(g.shortestPath(v1, v3), new ArrayList<>());
+
+    }
+
+    @Test
+    public void testDisconnectedGraphs(){
+        Vertex v1 = new Vertex(1, "A");
+        Vertex v2 = new Vertex(2, "B");
+        Vertex v3 = new Vertex(3, "C");
+        Vertex v4 = new Vertex(4, "D");
+        Edge<Vertex> e1 = new Edge<>(v1,v2,1);
+        Edge<Vertex> e2 = new Edge<>(v3,v4,1);
+        Graph<Vertex, Edge<Vertex>> g = new Graph<>();
+        g.addVertex(v1);
+        g.addVertex(v2);
+        g.addVertex(v3);
+        g.addVertex(v4);
+        assertEquals(0, g.diameter());
+        g.addEdge(e1);
+        g.addEdge(e2);
+        System.out.println(g.edge(e1));
+
+        assertEquals(1, g.diameter());
+        try{
+            g.minimumSpanningTree();
+            fail();
+        }catch(Exception e){
+            assertTrue(true);
+        }
+        finally {
+            assertEquals(g.shortestPath(v1, v3), new ArrayList<>());
+        }
+
+    }
+
+    @Test
+    public void testIsConnected(){
+        Vertex v1 = new Vertex(1, "A");
+        Vertex v2 = new Vertex(2, "B");
+        Vertex v3 = new Vertex(3, "C");
+        Vertex v4 = new Vertex(4, "D");
+        Edge<Vertex> e1 = new Edge<>(v1,v2,1);
+        Edge<Vertex> e2 = new Edge<>(v3,v4,1);
+        Graph<Vertex, Edge<Vertex>> g = new Graph<>();
+        g.addVertex(v1);
+        g.addVertex(v2);
+        g.addVertex(v3);
+        g.addVertex(v4);
+        g.addEdge(e1);
+        g.addEdge(e2);
 
         assertEquals(g.shortestPath(v1, v3), new ArrayList<>());
 
