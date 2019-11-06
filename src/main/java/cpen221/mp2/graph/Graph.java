@@ -541,24 +541,9 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
 
     private int disconnectedDiameter(){
         int max = 0;
-        for(V v: this.vertices){
-            Set<V> allConnectedVertices = new HashSet<>();
-            Set<E> allConnectedEdges = new HashSet<>();
-            for(V v1: this.vertices){
-                Map VandE = this.getNeighbours(v1);
-                allConnectedVertices.addAll(VandE.keySet());
-                allConnectedEdges.addAll(VandE.values());
-            }
-            Graph temp = new Graph();
-            for(V v2: allConnectedVertices){
-                temp.addVertex(v2);
-            }
-            for(E e: allConnectedEdges){
-                temp.addEdge(e);
-            }
-            int tempDiam = temp.diameter();
-            if(tempDiam > max){
-                max = tempDiam;
+        for(E e: this.edges){
+            if(e.length() > max){
+                max = e.length();
             }
         }
         return max;
