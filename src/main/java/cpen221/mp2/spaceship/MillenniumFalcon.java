@@ -17,6 +17,14 @@ import java.util.*;
 public class MillenniumFalcon implements Spaceship {
     long startTime = System.nanoTime(); // start time of rescue phase
 
+    /**
+     * Moves the MillenniumFalcon spaceship from the current planet
+     * throughout the graph until the spaceship is on the planet Kamino
+     *
+     * @param state The current state of the MillenniumFalcon within the graph
+     * @requires a fully connected graph that contains Kamino
+     * @modifies state
+     */
     @Override
     public void hunt(HunterStage state) {
 
@@ -71,6 +79,19 @@ public class MillenniumFalcon implements Spaceship {
         }
     }
 
+
+    /**
+     * Helper method for hunt.  Continues to move the MillenniumFalcon spaceship from the current
+     * planet throughout the graph until the spaceship is on the planet Kamino
+     *
+     * @param state      The current state of the MillenniumFalcon within the graph
+     * @param blackList  A set of planet ids to not return to
+     * @param count      A count of how many times the helper method has been run
+     * @param allVisited A set of all the planets that have been visited by the
+     *                   MillenniumFalcon
+     * @requires a fully connected graph that contains Kamino
+     * @modifies state, blacklist, allVisited, count
+     */
     public void hunt(HunterStage state, Set<Integer> blackList, int count,
                      Set<Integer> allVisited) {
 
@@ -130,6 +151,16 @@ public class MillenniumFalcon implements Spaceship {
         }
     }
 
+    /**
+     * Helper method for hunt. Performs a Depth-First-Search until the
+     * spaceship is on Kamino
+     *
+     * @param state      The current state of the MillenniumFalcon within the graph
+     * @param discovered A set of planet ids that have been visited in the Depth First Search
+     * @param previous   The previous id of the planet the spaceship has last been on
+     * @requires a fully connected graph that contains Kamino
+     * @modifies state, discovered, previous
+     */
     private void dFS(HunterStage state, Set<Integer> discovered, int previous) {
         int here = state.currentID();
         if (state.onKamino()) {
@@ -155,6 +186,14 @@ public class MillenniumFalcon implements Spaceship {
     }
 
 
+    /**
+     * Moves the MillenniumFalcon spaceship from the current planet
+     * throughout the graph collecting spice before returning the spaceship to Earth.
+     *
+     * @param state The current state of the MillenniumFalcon within the graph
+     * @requires a fully connected graph that contains Earth
+     * @modifies state
+     */
     @Override
     public void gather(GathererStage state) {
 
@@ -202,6 +241,17 @@ public class MillenniumFalcon implements Spaceship {
         }
     }
 
+    /**
+     * Helper method for gather.  Moves the MillenniumFalcon spaceship from the current planet
+     * throughout the graph on the given path
+     *
+     * @param path    A valid path that lists planets to move on in order.
+     * @param state   The current state of the MillenniumFalcon within the graph
+     * @param visited A set of planets containing all planets visited in the gather stage
+     * @requires a valid path containing the start planet and end planet that lists
+     * in order the Planets to visit.
+     * @modifies state, visited
+     */
     private void moveOnPath(List<Planet> path, GathererStage state, Set<Planet> visited) {
         for (int i = 1; i < path.size(); i++) {
             state.moveTo(path.get(i));

@@ -12,33 +12,41 @@ import java.util.LinkedList;
 import java.util.Random;
 
 /**
- * Represents a graph with vertices of type V.
+ * Represents a graph with vertices of type V and edges of type <E<V>>
+ * <p>
+ * Representation Invariant:
+ * each V in vertices is unique, and cannot be null.
+ * each E in Edges must connect two distinct vertices in the graph, and cannot be null
+ * Graph is allowed to be disconnected
+ * Edges can be of any integer length
+ * <p>
+ * Abstraction Function:
+ * Represents a graph of a set V's which may/may not be connected by E's
+ * edges: the set of all edges that connect vertices within the graph
+ * vertices: the set of all vertices within the graph that may be connected by edges
+ * for all E in edges, there exists 2 unique Vs in vertices.
  *
- * @param <V> represents a vertex type
+ * @param <V>    represents a vertex type
+ * @param <E<V>> represents a type of edge that connects vertices
  */
 public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>, IGraph<V, E> {
 
     private HashSet<V> vertices = new HashSet<>();
     private HashSet<E> edges = new HashSet<>();
 
-    // Representation Invariant:
-    // each V in vertices is unique, and cannot be null.
-    // No vertex can exist without being connected to another, except the first
-    // Vertex added to the graph
-    // each E in Edges must connect two vertices, and cannot be null
-
-    // Abstraction Function:
-    // Represents a graph of a set V's which may/may not be connected by E's
-
-
     public Graph() {
     }
 
+    /**
+     * Calculates if the current graph state is fully connected or not.
+     *
+     * @return true iff all vertices can be reached from any other vertex
+     */
     private boolean isConnected() {
         for (V v : this.vertices) {
             for (V v1 : this.vertices) {
-                if(!v1.equals(v)){
-                    if(shortestPath(v,v1).equals(new ArrayList<>())){
+                if (!v1.equals(v)) {
+                    if (shortestPath(v, v1).equals(new ArrayList<>())) {
                         return false;
                     }
                 }
@@ -47,6 +55,12 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
         return true;
     }
 
+    /**
+     * Calculates if the vertex v is connected to another vertex through an edge
+     *
+     * @param v the vertex being checked
+     * @return true if v is connected to another vertex through an edge, and false otherwise.
+     */
     private boolean isConnected(V v) {
         int count = 0;
         for (E e : this.edges) {
@@ -59,10 +73,11 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
 
 
     /**
-     * Add a vertex to the graph, if it does not already exist
+     * Add a vertex to the graph, if it does not already exist in the graph.
      *
      * @param v vertex to add
      * @return true iff v is a vertex and is not already in the graph, false otherwise
+     * @mutates this graph via this.vertices.
      */
     public boolean addVertex(V v) {
         if (v == null) {
@@ -87,12 +102,11 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
     }
 
     /**
-     * Adds an edge of the graph if e is incident with any V in vertices
-     * Also adds any vertex of this edge to the graph if it does not already exist
+     * Adds an edge of the graph if e is incident with any 2 V's in vertices
      *
-     * @param e the edge to add to the graph
+     * @param e the edge to try to add to the graph
      * @return true iff e is an edge and is not already in the graph
-     * and it connects to another vertex, and false otherwise
+     * and it connects two vertices that are in this graph, and false otherwise
      */
     public boolean addEdge(E e) {
         if (e == null) {
@@ -110,7 +124,7 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
     }
 
     /**
-     * Check if an edge is part of the graph
+     * Check if an edge is currently contained in the graph
      *
      * @param e the edge to check in the graph
      * @return true if e is an edge in the graph and not null, and false otherwise
@@ -153,7 +167,8 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
     /**
      * Obtain the sum of the lengths of all edges in the graph
      *
-     * @return the sum of the lengths of all edges in the graph
+     * @return the sum of the lengths of all edges in the graph, if no edges exist
+     * in graph, return 0
      */
     public int edgeLengthSum() {
         int sum = 0;
@@ -203,7 +218,7 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
     /**
      * Obtain a set of all vertices in the graph.
      *
-     * @return a set of all vertices in the graph
+     * @return a set of all vertices contained in the graph
      */
     public Set<V> allVertices() {
         return (this.vertices);
@@ -213,7 +228,8 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
      * Obtain a set of all vertices incident on v.
      *
      * @param v the vertex of interest
-     * @return all edges incident on v
+     * @return a set of all edges incident on v,
+     * returns an empty set if no edges are incident on v.
      */
     public Set<E> allEdges(V v) {
         Set<E> newEdges = new HashSet<>();
@@ -241,7 +257,7 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
      *
      * @param v is the vertex whose neighbourhood we want.
      * @return a map containing each vertex w that neighbors v and the edge between v and w.
-     * If v is not in graph, returns an empty set.
+     * If v is not in graph or has no neighbours, returns an empty set.
      */
     public Map<V, E> getNeighbours(V v) {
         if (!this.vertex(v)) {
@@ -256,12 +272,13 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
     }
 
     /**
-     * Compute the shortest path in length from source to sink
+     * Compute the shortest path in edge length from source to sink
      *
      * @param source the start vertex
      * @param sink   the end vertex
      * @return the vertices, in order, on the shortest path from source to sink
      * (both end points are part of the list). If they are not, returns an empty List.
+     * If there is no path between the vertices, returns an empty list.
      */
     @Override
     public List<V> shortestPath(V source, V sink) {
@@ -298,6 +315,7 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
      * @param source the start vertex
      * @return a map that maps the current Vertex to the optimal previous one.
      * Optimal meaning it has the least total distance from source, on the way to sink.
+     * @throws IllegalArgumentException if there is no path from
      */
 
     public Map<V, V> doDijkstra(V source) {
@@ -348,11 +366,11 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
     }
 
     /**
-     * Compute the shortest path lengths from source to all other vertices
+     * Helper method that computes the shortest path lengths from source to all other vertices
      *
      * @param source the start vertex
      * @return a map of all the vertices in the graph,
-     *          mapped with the shortest distance from the source.
+     * mapped with the shortest distance from the source.
      */
     private Map<V, Integer> getAllShortestPaths(V source) {
         Map<V, Integer> dist = new HashMap<>();
@@ -360,7 +378,7 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
         Set<V> allVs = new HashSet<>();
         boolean flag = false;
 
-        if(!this.isConnected(source)){
+        if (!this.isConnected(source)) {
             return new HashMap<V, Integer>();
         }
 
@@ -405,7 +423,7 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
     }
 
     /**
-     * Compute the minimum spanning tree of the graph.
+     * Computes the minimum spanning tree of the graph.
      *
      * @return a list of edges that forms a minimum spanning tree of the graph.
      * If there are disconnected vertices in the graph, throw an IllegalArgumentException.
@@ -452,10 +470,10 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
      *
      * @param path indicates the vertices on the given path
      * @return the length of path, if all vertices in path exist
-     *            in graph and are connected in the given order.
-     *            If given path does not contain connected vertices
-     *            or there are vertices not within the graph,
-     *            return Integer.MAX_VALUE.
+     * in graph and are connected in the given order.
+     * If given path does not contain connected vertices
+     * or there are vertices not within the graph,
+     * return Integer.MAX_VALUE.
      */
     @Override
     public int pathLength(List<V> path) {
@@ -481,6 +499,8 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
      * @param range the radius of the search.
      * @return a set of vertices that are within range of v (this set does not contain v).
      * If v does not exist in graph, or no vertices are in range, returns an empty set.
+     * @requires the graph be connected, or if disconnected, contain at least one vertex that
+     * has no connected edges.
      */
     @Override
     public Set<V> search(V v, int range) {
@@ -489,14 +509,14 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
         }
         Map<V, Integer> vertexDistance = this.getAllShortestPaths(v);
 
-        if(vertexDistance.size() == 0){
+        if (vertexDistance.size() == 0) {
             return new HashSet<V>();
         }
 
         Set<V> inRange = new HashSet<>();
 
         for (V vertex : vertices) {
-            if(!vertexDistance.containsKey(vertex)){
+            if (!vertexDistance.containsKey(vertex)) {
                 continue;
             }
             if (vertexDistance.get(vertex) <= range && !v.equals(vertex)) {
@@ -511,38 +531,44 @@ public class Graph<V extends Vertex, E extends Edge<V>> implements ImGraph<V, E>
      * Compute the diameter of the graph.
      * <ul>
      * <li>The diameter of a graph is the length of the longest shortest path in the graph.</li>
-     * <li>If a graph has multiple components then we will define the diameter
-     * as the diameter of the largest component.</li>
      * </ul>
      *
      * @return the diameter of the graph.
+     * If graph is disconnected, returns the longest edge length of the graph.
+     * If the graph does not contain any edges, the function returns 0.
      */
     @Override
     public int diameter() {
         int max = 0;
-        if(this.isConnected()) {
+        if (this.isConnected()) {
             for (V v : vertices) {
                 for (V v1 : vertices) {
                     if (v1.equals(v)) {
                         continue;
                     }
-                    if (max < this.pathLength(this.shortestPath(v, v1)) && this.pathLength(this.shortestPath(v, v1)) != Integer.MAX_VALUE) {
+                    if (max < this.pathLength(this.shortestPath(v, v1))
+                            && this.pathLength(this.shortestPath(v, v1)) != Integer.MAX_VALUE) {
                         max = this.pathLength(this.shortestPath(v, v1));
                     }
                 }
             }
-        }
-        else{
+        } else {
             return this.disconnectedDiameter();
         }
 
         return max;
     }
 
-    private int disconnectedDiameter(){
+
+    /**
+     * Helper method that computes the longest edge length if the graph is disconnected
+     *
+     * @return the longest edge length of the graph.
+     */
+    private int disconnectedDiameter() {
         int max = 0;
-        for(E e: this.edges){
-            if(e.length() > max){
+        for (E e : this.edges) {
+            if (e.length() > max) {
                 max = e.length();
             }
         }
